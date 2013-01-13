@@ -4,7 +4,7 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-01-12T17:00:16-08:00</updated>
+ <updated>2013-01-13T14:54:12-08:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
@@ -15,7 +15,7 @@
  <entry>
    <title>What No One Told You About Z-Index</title>
    <link href="http://philipwalton.com/articles/what-no-one-told-you-about-z-index"/>
-   <updated>2013-01-09T00:00:00-08:00</updated>
+   <updated>2012-12-22T00:00:00-08:00</updated>
    <id>http://philipwalton.com/articles/what-no-one-told-you-about-z-index</id>
    
    <content type="html">The problem with z-index is that very few people understand how it really works. It's not complicated, but it if you've never taken the time to read its specification, there &amp;hellip; &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/what-no-one-told-you-about-z-index&quot;&gt;[more]&lt;/a&gt;</content>
