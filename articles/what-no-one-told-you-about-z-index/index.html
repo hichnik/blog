@@ -13,7 +13,7 @@
     
 
     <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
-    <link href="http://philipwalton.com/atom.xml" rel="alternate" title="" type="application/atom+xml">
+    <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
 
     <!--[if lt IE 9]>
     <script src="http://philipwalton.com/assets/javascripts/modernizr.custom.js"></script>
@@ -99,7 +99,7 @@
 
 <p>Here's what the HTML and basic CSS look like. I've also included a visual demo (via <a href="http://codepen.io">Codepen</a>) with the full CSS below:</p>
 
-<pre class="highlight"><code>&lt;div&gt;
+<pre class="highlight"><code class="language-">&lt;div&gt;
   &lt;span class=&quot;red&quot;&gt;Red&lt;/span&gt;
 &lt;/div&gt;
 &lt;div&gt;
@@ -112,7 +112,7 @@
 
 
 
-<pre class="highlight"><code>.red, .green, .blue {
+<pre class="highlight"><code class="language-">.red, .green, .blue {
   position: absolute;
 }
 .red {
@@ -137,13 +137,13 @@
 <p><strong>Here's the challenge:</strong> try to see if you can make the red <code>&lt;span&gt;</code> element stack behind the blue and green <code>&lt;span&gt;</code> elements without breaking any of the following rules:</p>
 
 <ul>
-<li>Do not alter the HTML markup in any way</li>
-<li>Do not add/change the z-index property of any element</li>
-<li>Do not add/change the position property of any element</li>
+<li>Do not alter the HTML markup in any way.</li>
+<li>Do not add/change the z-index property of any element.</li>
+<li>Do not add/change the position property of any element.</li>
 </ul>
 
 
-<p>To see if you can figure it out, click the <em>edit on Codepen</em> link and play around with it for a bit. If you've succeeded, it should look like the example below.</p>
+<p>To see if you can figure it out, click the <em>edit on Codepen</em> link above and play around with it for a bit. If you've succeeded, it should look like the example below.</p>
 
 <p><em>Warning: Don't click on the CSS tab of the example below or it will give away the answer.</em></p>
 
@@ -154,9 +154,9 @@
 
 <h2>The Solution</h2>
 
-<p>The solution is to add an opacity value less than <code>1</code> to the first <code>&lt;div&gt;</code>, the one that's the parent of the red <code>&lt;span&gt;</code>. Here is the CSS that was added to the Codepen above:</p>
+<p>The solution is to add an opacity value less than <code>1</code> to the first <code>&lt;div&gt;</code> (the parent of the red <code>&lt;span&gt;</code>). Here is the CSS that was added to the Codepen above:</p>
 
-<pre class="highlight"><code>div:first-child {
+<pre class="highlight"><code class="language-">div:first-child {
   opacity: .99;
 }</code></pre>
 
@@ -171,7 +171,7 @@
 
 <p>Every element in an HTML document can be either in front of or behind other element in the document. This is known as the stacking order. The rules to determine this order are pretty clearly defined in the spec, but as I've already stated, they're not fully understood by most developers.</p>
 
-<p>When the z-index and position properties aren't involved, the rules are pretty simple: basically, the stacking order is the same as the order of appearance in the HTML. (OK, it's actually a <a href="http://www.w3.org/TR/CSS2/zindex.html">little more complicated</a> than that, but as long as you're not using negative margins to overlap inline elements, you won't encounter the edge cases.)</p>
+<p>When the z-index and position properties aren't involved, the rules are pretty simple: basically, the stacking order is the same as the order of appearance in the HTML. (OK, it's actually a <a href="http://www.w3.org/TR/CSS2/zindex.html">little more complicated</a> than that, but as long as you're not using negative margins to overlap inline elements, you probably won't encounter the edge cases.)</p>
 
 <p>When you introduce the position property into the mix, any positioned elements (and their children) are displayed in front of any non-positioned elements. (To say an element is "positioned" means that it has a position value other than <code>static</code>, e.g., <code>relative</code>, <code>absolute</code>, etc.)</p>
 
@@ -181,7 +181,7 @@
 
 <p>Groups of elements with a common parent that move forward or backward together in the stacking order make up what is known as a stacking context. A full understanding of stacking contexts is key to really grasping how z-index and the stacking order work.</p>
 
-<p>Every stacking context has a single HTML element as its root element. When a new stacking context is formed on an element, that stacking context confines all of its child elements to a particular place in the stacking order. That means that if an element is contained in a stacking context at the bottom of the stacking order, there is no way to get it to appear in front of an element in a different stacking context higher in the stacking order, even with a z-index of a billion!</p>
+<p>Every stacking context has a single HTML element as its root element. When a new stacking context is formed on an element, that stacking context confines all of its child elements to a particular place in the stacking order. That means that if an element is contained in a stacking context at the bottom of the stacking order, there is no way to get it to appear in front of another element in a different stacking context that is higher in the stacking order, even with a z-index of a billion!</p>
 
 <p>New stacking contexts can be formed on an element in one of three ways:</p>
 
@@ -227,7 +227,7 @@
 
 <p>Getting back to the original problem, I've recreated the HTML structure adding comments within each tag indicating its place in the stacking order. This order is assuming the original CSS.</p>
 
-<pre class="highlight"><code>&lt;div&gt;&lt;!-- 1 --&gt;
+<pre class="highlight"><code class="language-">&lt;div&gt;&lt;!-- 1 --&gt;
   &lt;span class=&quot;red&quot;&gt;&lt;!-- 6 --&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;div&gt;&lt;!-- 2 --&gt;
@@ -240,7 +240,7 @@
 
 <p>When we add the opacity rule to the first <code>&lt;div&gt;</code>, the stacking order changes like so:</p>
 
-<pre class="highlight"><code>&lt;div&gt;&lt;!-- 1 --&gt;
+<pre class="highlight"><code class="language-">&lt;div&gt;&lt;!-- 1 --&gt;
   &lt;span class=&quot;red&quot;&gt;&lt;!-- 1.1 --&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;div&gt;&lt;!-- 2 --&gt;
@@ -267,6 +267,13 @@
 <script async src="http://codepen.io/assets/embed/ei.js"></script>
 
 
+
+
+  
+  
+  <p class="callout">
+    <span class="twitter-icon"></span> If you liked this article, please consider <a href="http://twitter.com/intent/tweet?text=What%20No%20One%20Told%20You%20About%20Z-Index&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fwhat-no-one-told-you-about-z-index&via=philwalton">sharing it on Twitter</a>.
+  </p>
 
   
     <div id="disqus_thread" class="l-comments"></div>
@@ -321,7 +328,7 @@
   </div>
 
   <div class="widget">
-    <h3 class="widget__title">Topics</h3>
+    <h3 class="widget__title">Tags</h3>
     <ul>
     
     

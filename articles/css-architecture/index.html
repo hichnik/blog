@@ -13,7 +13,7 @@
     <meta name="canonical" href="http://engineering.appfolio.com/2012/11/16/css-architecture">
 
     <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
-    <link href="http://philipwalton.com/atom.xml" rel="alternate" title="" type="application/atom+xml">
+    <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
 
     <!--[if lt IE 9]>
     <script src="http://philipwalton.com/assets/javascripts/modernizr.custom.js"></script>
@@ -98,7 +98,7 @@
   
 </header>
 
-  <p class="info">
+  <p class="callout">
   This article was originally published on the <a href="http://engineering.appfolio.com/2012/11/16/css-architecture">AppFolio Engineering Technical Blog</a>. It has been reprinted here with permission.
 </p>
 
@@ -143,7 +143,7 @@
 
 <p>In almost every site on the web there will be a particular visual element that looks exactly the same with each occurrence, except one. And when faced with this one-off situation almost every new CSS developer (and even experienced ones) handles it the same way. You figure out some unique parent for this one particular occurrence (or you create one), and you write a new rule to handle it.</p>
 
-<pre class="highlight"><code>.widget {
+<pre class="highlight"><code class="language-">.widget {
   background: yellow;
   border: 1px solid black;
   color: black;
@@ -179,7 +179,7 @@ body.homepage .widget {
 
 <p>While technically true, the more I develop with CSS, the more I stay away from complex selectors. The more complicated a selector the more coupled it is to the HTML. Relying on HTML tags and combinators keeps your HTML squeaky clean, but it makes your CSS gross and dirty.</p>
 
-<pre class="highlight"><code>#main-nav ul li ul li div { }
+<pre class="highlight"><code class="language-">#main-nav ul li ul li div { }
 #content article h1:first-child { }
 #sidebar &gt; div &gt; h3 %2B p { }</code></pre>
 
@@ -200,7 +200,7 @@ body.homepage .widget {
 
 <p>When creating reusable design components, it’s very common to scope (as it were) the component’s sub-elements inside the component’s class name. For example:</p>
 
-<pre class="highlight"><code>&lt;div class=&quot;widget&quot;&gt;
+<pre class="highlight"><code class="language-">&lt;div class=&quot;widget&quot;&gt;
   &lt;h3 class=&quot;title&quot;&gt;...&lt;/h3&gt;
   &lt;div class=&quot;contents&quot;&gt;
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -213,7 +213,7 @@ body.homepage .widget {
 
 
 
-<pre class="highlight"><code>.widget {}
+<pre class="highlight"><code class="language-">.widget {}
 .widget .title {}
 .widget .contents {}
 .widget .action {}</code></pre>
@@ -229,7 +229,7 @@ body.homepage .widget {
 
 <p>Sometimes you make a visual component that needs to be 20 pixels from the top left corner of a section in your site:</p>
 
-<pre class="highlight"><code>.widget {
+<pre class="highlight"><code class="language-">.widget {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -281,7 +281,7 @@ body.homepage .widget {
 
 <p>The best way to make sure your selectors don’t style unwanted elements is to not give them the opportunity. A selector like <code>#main-nav ul li ul li div</code> could very easily end up applying to unwanted elements as your markup changes down the road. A style like <code>.subnav</code>, on the other hand, will have absolutely no chance of accidentally applying to an unwanted element. Applying classes directly to the elements you want to style is the best way to keep your CSS predictable.</p>
 
-<pre class="highlight"><code>/* Grenade */
+<pre class="highlight"><code class="language-">/* Grenade */
 #main-nav ul li ul { }
 
 /* Sniper Rifle */
@@ -302,7 +302,7 @@ body.homepage .widget {
 
 <p>We already examined why parent selectors aren’t 100% effective at encapsulation and preventing style cross-contamination. A much better approach is applying namespaces to the classes themselves. If an element is a member of a visual component, every one of its sub-element classes should use the component’s base class name as a namespace.</p>
 
-<pre class="highlight"><code>/* High risk of style cross-contamination */
+<pre class="highlight"><code class="language-">/* High risk of style cross-contamination */
 .widget { }
 .widget .title { }
 
@@ -317,7 +317,7 @@ body.homepage .widget {
 
 <p>When an existing component needs to look slightly different in a certain context, create a modifier class to extend it.</p>
 
-<pre class="highlight"><code>/* Bad */
+<pre class="highlight"><code class="language-">/* Bad */
 .widget { }
 #sidebar .widget { }
 
@@ -360,7 +360,7 @@ body.homepage .widget {
 
 <p><a href="http://nicolasgallagher.com">Nicolas Gallagher</a> recently wrote about <a href="http://nicolasgallagher.com/about-html-semantics-front-end-architecture/">his solution to this problem</a> which I have also adopted (with slight changes) with great success. To illustrate the need for a naming convention consider the following:</p>
 
-<pre class="highlight"><code>/* A component */
+<pre class="highlight"><code class="language-">/* A component */
 .button-group { }
 
 /* A component modifier (modifying .button) */
@@ -375,7 +375,7 @@ body.homepage .widget {
 
 <p>From looking at the above classes, it’s impossible to tell what type of rule they apply to. This not only increases confusion during development, but it also makes it harder to test your CSS and HTML in an automated way. A structured naming convention allows you to look at a class name and know exactly what its relationship is to other classes and where it should appear in the HTML — making naming easier and testing possible where it previously was not.</p>
 
-<pre class="highlight"><code>/* Templates Rules (using Sass placeholders) */
+<pre class="highlight"><code class="language-">/* Templates Rules (using Sass placeholders) */
 %template-name
 %template-name--modifier-name
 %template-name__sub-object
@@ -400,7 +400,7 @@ body.homepage .widget {
 
 <p>The first example redone:</p>
 
-<pre class="highlight"><code>/* A component */
+<pre class="highlight"><code class="language-">/* A component */
 .button-group { }
 
 /* A component modifier (modifying .button) */
@@ -439,7 +439,7 @@ body.homepage .widget {
 
 <p><code>@extend</code> should be used with care though because sometime you want those classes in your HTML. For example, when you first learn about <code>@extend</code> it might be tempting to use it with all of your modifier classes like so:</p>
 
-<pre class="highlight"><code>.button {
+<pre class="highlight"><code class="language-">.button {
   /* button styles */
 }
 
@@ -456,7 +456,7 @@ body.homepage .widget {
 
 <p>Here’s how it might look using the modal example referenced above:</p>
 
-<pre class="highlight"><code>.modal {
+<pre class="highlight"><code class="language-">.modal {
   @extend %dialog;
   @extend %drop-shadow;
   @extend %statically-centered;
@@ -520,6 +520,13 @@ body.homepage .widget {
 <p>The bottom line is that whatever you do to organize your code, make sure you judge your methods by whether or not they actually help make your development easier and more maintainable in the long term.</p>
 
 
+
+  
+  
+  <p class="callout">
+    <span class="twitter-icon"></span> If you liked this article, please consider <a href="http://twitter.com/intent/tweet?text=CSS%20Architecture&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fcss-architecture&via=philwalton">sharing it on Twitter</a>.
+  </p>
+
   
     <div id="disqus_thread" class="l-comments"></div>
 <script type="text/javascript">
@@ -573,7 +580,7 @@ body.homepage .widget {
   </div>
 
   <div class="widget">
-    <h3 class="widget__title">Topics</h3>
+    <h3 class="widget__title">Tags</h3>
     <ul>
     
     
