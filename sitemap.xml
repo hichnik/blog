@@ -2,26 +2,30 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://philipwalton.com/articles/css-architecture</loc>
-        <lastmod>2013-01-16T22:59:29-08:00</lastmod>
+        <lastmod>2013-01-17T09:59:46-08:00</lastmod>
     </url>
     <url>
         <loc>http://philipwalton.com/articles/what-no-one-told-you-about-z-index</loc>
-        <lastmod>2013-01-16T23:12:55-08:00</lastmod>
+        <lastmod>2013-01-17T09:59:46-08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://philipwalton.com/articles/the-future-of-oocss-a-proposal</loc>
+        <lastmod>2013-01-17T10:09:50-08:00</lastmod>
     </url>
     <url>
         <loc>http://philipwalton.com/404.html</loc>
-        <lastmod>2013-01-16T22:11:12-08:00</lastmod>
+        <lastmod>2013-01-17T09:59:46-08:00</lastmod>
     </url>
     <url>
         <loc>http://philipwalton.com/about/</loc>
-        <lastmod>2013-01-16T23:12:55-08:00</lastmod>
+        <lastmod>2013-01-17T10:09:50-08:00</lastmod>
     </url>
     <url>
         <loc>http://philipwalton.com/articles/</loc>
-        <lastmod>2013-01-16T23:12:55-08:00</lastmod>
+        <lastmod>2013-01-17T10:09:50-08:00</lastmod>
     </url>
     <url>
         <loc>http://philipwalton.com/</loc>
-        <lastmod>2013-01-16T23:12:55-08:00</lastmod>
+        <lastmod>2013-01-17T10:09:50-08:00</lastmod>
     </url>
 </urlset>
