@@ -208,10 +208,10 @@
 
 <ol>
 <li>The stacking context's root element</li>
-<li>Positioned elements (and their children) with negative z-index values (higher values in front of lower ones, otherwise ordered by appearance in the HTML)</li>
+<li>Positioned elements (and their children) with negative z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li>
 <li>Non-positioned elements (ordered by appearance in the HTML)</li>
 <li>Positioned elements (and their children) with a z-index value of <code>auto</code> (ordered by appearance in the HTML)</li>
-<li>Positioned elements (and their children) with positive z-index values (higher values in front of lower ones, otherwise ordered by appearance in the HTML)</li>
+<li>Positioned elements (and their children) with positive z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li>
 </ol>
 
 
@@ -268,11 +268,9 @@
 
 
 
-
   
   
-  <p class="callout">
-    <span class="twitter-icon"></span> If you liked this article, please consider <a href="http://twitter.com/intent/tweet?text=What%20No%20One%20Told%20You%20About%20Z-Index&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fwhat-no-one-told-you-about-z-index&via=philwalton">sharing it on Twitter</a> or <a href="http://news.ycombinator.com/item?id=5062761">Hacker News</a>.
+  <p class="callout">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=What%20No%20One%20Told%20You%20About%20Z-Index&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fwhat-no-one-told-you-about-z-index&via=philwalton">share it on Twitter</a> or <a href="http://news.ycombinator.com/item?id=5062761">upvote it on Hacker News</a>.
   </p>
 
   
@@ -328,7 +326,7 @@
   </div>
 
   <div class="widget">
-    <h3 class="widget__title">Tags</h3>
+    <h3 class="widget__title">Topics</h3>
     <ul>
     
     
@@ -368,10 +366,12 @@
 
     </div>
 
-    <!--[if gte IE 9]><!-->
-    <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
-    <script>hljs.initHighlightingOnLoad()</script>
-    <!--<![endif]-->
+    
+      <!--[if gte IE 9]><!-->
+      <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
+      <script>hljs.initHighlightingOnLoad()</script>
+      <!--<![endif]-->
+    
 
   </body>
 </html>
