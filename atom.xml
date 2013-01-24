@@ -4,13 +4,22 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-01-17T14:13:01-08:00</updated>
+ <updated>2013-01-24T08:58:36-08:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
    <email>philip@philipwalton.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Defending Presentational Class Names</title>
+   <link href="http://philipwalton.com/articles/defending-presentational-class-names"/>
+   <updated>2013-01-24T08:57:00-08:00</updated>
+   <id>http://philipwalton.com/articles/defending-presentational-class-names</id>
+   
+   <content type="html">Recently, Codrops, an online web design and development blog, published an article I wrote for them entitled: Defending Presentational Class Names. In the article I discuss the use &amp;hellip; &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/defending-presentational-class-names&quot;&gt;[more]&lt;/a&gt;</content>
+ </entry>
  
  <entry>
    <title>The Future of OOCSS: A Proposal</title>
