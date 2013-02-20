@@ -4,13 +4,22 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-02-18T14:59:55-08:00</updated>
+ <updated>2013-02-20T14:38:23-08:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
    <email>philip@philipwalton.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Dynamic Selectors</title>
+   <link href="http://philipwalton.com/articles/dynamic-selectors/"/>
+   <updated>2013-02-20T14:22:24-08:00</updated>
+   <id>http://philipwalton.com/articles/dynamic-selectors/</id>
+   
+   <content type="html">When creating a new CSS library or framework, developers typically take one of two approaches with component naming: the Bootstrap approach or the jQueryUI approach. Bootstrap tries to be as simple and basic as possible, calling a component exactly what it is. If something is a tooltip, why &amp;hellip; &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/dynamic-selectors/&quot;&gt;[more]&lt;/a&gt;</content>
+ </entry>
  
  <entry>
    <title>Defending Presentational Class Names</title>
