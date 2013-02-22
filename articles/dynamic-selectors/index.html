@@ -1,17 +1,321 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>Dynamic Selectors — Philip Walton</title><meta name="HandheldFriendly" content="True"><meta name="MobileOptimized" content="320"><meta name= viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"><link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css"><link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml"><link rel="canonical" href="http://philipwalton.com/articles/dynamic-selectors/"><meta name="description" content="Thoughts on front-end development, architecture, and the future of the web."><!--[if lt IE 9]><script src="http://philipwalton.com/assets/javascripts/html5shiv.js"></script><script src="http://philipwalton.com/assets/javascripts/respond.js"></script><![endif]--><script>var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-21292978-1"]),_gaq.push(["_trackPageview"]),function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></head><body><header class="header" role="banner"><div class="l-container"> <hgroup class="l-header-main"><h1 class="header__title"><a href="http://philipwalton.com/" rel="home">Philip Walton</a></h1><h2 class="header__description">On Front End Web Development</h2> </hgroup><nav class="l-header-nav" role="navigation"><ul class="nav"><li><a href="http://philipwalton.com/">Home</a></li><li><a class="is-selected" href="http://philipwalton.com/articles/">Articles</a></li><li><a href="http://philipwalton.com/about/">About</a></li></ul> </nav></div> </header><div class="l-container"><section class="l-content" role="main"> <article role="article"><header class="page-header"><h1 class="page-header__title"> Dynamic Selectors</h1><ul class="article-meta"><li> <time datetime="2013-02-20">February 20, 2013</time></li><li>Tagged as: <a href="http://philipwalton.com/tags/architecture/">Architecture</a>, <a href="http://philipwalton.com/tags/css/">CSS</a>, <a href="http://philipwalton.com/tags/sass/">Sass</a></li></ul> </header><p>When creating a new CSS library or framework, developers typically take one of two approaches with component naming: the <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> approach or the <a href="http://jqueryui.com/">jQueryUI</a> approach.</p><p>Bootstrap tries to be as simple and basic as possible, calling a component exactly what it is. If something is a tooltip, why not use the class selector <code>.tooltip</code> to define how it looks? This approach keeps things simple, clean, and easy to remember, but it has one big disadvantage. If you're trying to incorporate Bootstrap into an existing project, the chances are pretty high it will conflict with your existing selectors.</p><p>jQueryUI, on the other hand, takes the opposite approach. They prefix every class name with the string <code>ui-</code> greatly reducing the possibility of conflict, but at the cost of being more verbose.</p><p>Choosing between these two paths isn't always easy. Namespacing might be better for compatibility, but what should your prefix be? A longer, more unique prefix will lead to fewer conflicts at the cost of a lot more typing. But if you pick a simple prefix, another library might already be using it. And many of the short and sweet prefixes are already taken (like <code>ui-</code> by jQuery and <code>x-</code> by <a href="http://www.sencha.com/products/extjs">ExtJS</a>).</p><p>What if there were a third option? One with all the benefits of clean and simple names like Bootstrap, but without any of the possible conflicts?</p><p>With the help of a CSS preprocessor like <a href="http://sass-lang.com/">Sass</a>, this <em>is</em> possible.</p><h2>Define Selectors with a Variable</h2><p>Imagine I have a website that's been around for a while and already defines styles for <code>.tooltip</code> and <code>.alert</code>. Then I decide I want to start using Bootstrap, but I don't have the time to convert all of my legacy code to the Bootstrap format.</p><p>Given the current state of Bootstrap, I'm pretty much out of luck.</p><p>But what if there were a way to tell Bootstrap that I wanted to use its <code>.alert</code> component, but call it something else, perhaps <code>.notice</code>. With dynamic selectors, you can do exactly that.</p><p>Selectors don't have to be static. If you build your components with a predictable naming convention, it becomes easy to abstract that name into a variable.</p><p>The convention I use is to give each component a name and add that name to the root element of the component. Each sub-element of the component that needs styling defines a class with the component name as a prefix.</p><p>Here's a basic example of a messagebox component taken from an imaginary library called Flux:</p><pre class="highlight"><code class="language-xml">&lt;!-- the markup for the messagebox component --&gt;
-&lt;div class="messagebox"&gt;
-  &lt;h1 class="messagebox-title"&gt;...&lt;/h1&gt;
-  &lt;p class="messagebox-body"&gt;...&lt;/p&gt;
-&lt;/div&gt;</code></pre><pre class="highlight"><code class="language-css">/* and the corresponding styles */
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Dynamic Selectors &mdash; Philip Walton</title>
+
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name=viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
+    <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
+    
+      <link rel="canonical" href="http://philipwalton.com/articles/dynamic-selectors/">
+    
+
+    <meta name="description" content="Thoughts on front-end development, architecture, and the future of the web.">
+
+    <!--[if lt IE 9]>
+    <script src="http://philipwalton.com/assets/javascripts/html5shiv.js"></script>
+    <script src="http://philipwalton.com/assets/javascripts/respond.js"></script>
+    <![endif]-->
+
+    
+  
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21292978-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  
+
+
+  </head>
+  <body>
+
+    <header class="header" role="banner">
+      <div class="l-container">
+        <hgroup class="l-header-main">
+  <h1 class="header__title"><a href="http://philipwalton.com/" rel="home">Philip Walton</a></h1>
+  <h2 class="header__description">On Front End Web Development</h2>
+</hgroup>
+        
+    
+
+
+<nav class="l-header-nav" role="navigation">
+  <ul class="nav">
+    <li><a  href="http://philipwalton.com/">Home</a></li>
+    <li><a class="is-selected" href="http://philipwalton.com/articles/">Articles</a></li>
+    <li><a  href="http://philipwalton.com/about/">About</a></li>
+  </ul>
+</nav>
+      </div>
+    </header>
+
+    <div class="l-container">
+
+      <section class="l-content" role="main">
+        
+<article role="article">
+
+  <header class="page-header">
+  <h1 class="page-header__title">
+    
+      Dynamic Selectors
+    
+  </h1>
+  
+    <ul class="article-meta">
+  <li>
+    
+    
+      <time datetime="2013-02-20">February 20, 2013</time>
+    
+  </li>
+  <li>Tagged as:
+  
+  
+    
+    <a href="http://philipwalton.com/tags/architecture/">Architecture</a>,
+  
+    
+    <a href="http://philipwalton.com/tags/css/">CSS</a>,
+  
+    
+    <a href="http://philipwalton.com/tags/sass/">Sass</a>
+  
+  </li>
+</ul>
+  
+</header>
+
+  <p>When creating a new CSS library or framework, developers typically take one of two approaches with component naming: the <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> approach or the <a href="http://jqueryui.com/">jQueryUI</a> approach.</p>
+
+<p>Bootstrap tries to be as simple and basic as possible, calling a component exactly what it is. If something is a tooltip, why not use the class selector <code>.tooltip</code> to define how it looks? This approach keeps things simple, clean, and easy to remember, but it has one big disadvantage. If you're trying to incorporate Bootstrap into an existing project, the chances are pretty high it will conflict with your existing selectors.</p>
+
+<p>jQueryUI, on the other hand, takes the opposite approach. They prefix every class name with the string <code>ui-</code> greatly reducing the possibility of conflict, but at the cost of being more verbose.</p>
+
+<p>Choosing between these two paths isn't always easy. Namespacing might be better for compatibility, but what should your prefix be? A longer, more unique prefix will lead to fewer conflicts at the cost of a lot more typing. But if you pick a simple prefix, another library might already be using it. And many of the short and sweet prefixes are already taken (like <code>ui-</code> by jQuery and <code>x-</code> by <a href="http://www.sencha.com/products/extjs">ExtJS</a>).</p>
+
+<p>What if there were a third option? One with all the benefits of clean and simple names like Bootstrap, but without any of the possible conflicts?</p>
+
+<p>With the help of a CSS preprocessor like <a href="http://sass-lang.com/">Sass</a>, this <em>is</em> possible.</p>
+
+<h2>Define Selectors with a Variable</h2>
+
+<p>Imagine I have a website that's been around for a while and already defines styles for <code>.tooltip</code> and <code>.alert</code>. Then I decide I want to start using Bootstrap, but I don't have the time to convert all of my legacy code to the Bootstrap format.</p>
+
+<p>Given the current state of Bootstrap, I'm pretty much out of luck.</p>
+
+<p>But what if there were a way to tell Bootstrap that I wanted to use its <code>.alert</code> component, but call it something else, perhaps <code>.notice</code>. With dynamic selectors, you can do exactly that.</p>
+
+<p>Selectors don't have to be static. If you build your components with a predictable naming convention, it becomes easy to abstract that name into a variable.</p>
+
+<p>The convention I use is to give each component a name and add that name to the root element of the component. Each sub-element of the component that needs styling defines a class with the component name as a prefix.</p>
+
+<p>Here's a basic example of a messagebox component taken from an imaginary library called Flux:</p>
+
+<pre class="highlight"><code class="language-xml">&lt;!-- the markup for the messagebox component --&gt;
+&lt;div class=&quot;messagebox&quot;&gt;
+  &lt;h1 class=&quot;messagebox-title&quot;&gt;...&lt;/h1&gt;
+  &lt;p class=&quot;messagebox-body&quot;&gt;...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+
+
+
+<pre class="highlight"><code class="language-css">/* and the corresponding styles */
 .messagebox { }
 .messagebox-title { }
-.messagebox-body { }</code></pre><p>A predictable convention like this allows you to easily replace the static names in the selector with a Sass variable like so:</p><pre class="highlight"><code class="language-css">$flux-messagebox-name: "messagebox" !default;
+.messagebox-body { }</code></pre>
+
+
+<p>A predictable convention like this allows you to easily replace the static names in the selector with a Sass variable like so:</p>
+
+<pre class="highlight"><code class="language-css">$flux-messagebox-name: &quot;messagebox&quot; !default;
 .#{$flux-messagebox-name} { }
 .#{$flux-messagebox-name}-title { }
-.#{$flux-messagebox-name}-body { }</code></pre><p>This technique has all the pros of a clean naming system like Bootstrap with almost none of the potential conflicts. If a project wants to include the messagebox styles above, but its CSS already has <code>.messagebox</code> defined, there's no problem. All they'd have to do is assign the <code>$flux-messagebox-name</code> variable to something else before including the messagebox's Sass file, and the conflict is solved.</p><pre class="highlight"><code class="language-css">/* first override the messagebox's class name */
-$flux-messagebox-name: "some-other-name";
+.#{$flux-messagebox-name}-body { }</code></pre>
+
+
+<p>This technique has all the pros of a clean naming system like Bootstrap with almost none of the potential conflicts. If a project wants to include the messagebox styles above, but its CSS already has <code>.messagebox</code> defined, there's no problem. All they'd have to do is assign the <code>$flux-messagebox-name</code> variable to something else before including the messagebox's Sass file, and the conflict is solved.</p>
+
+<pre class="highlight"><code class="language-css">/* first override the messagebox's class name */
+$flux-messagebox-name: &quot;some-other-name&quot;;
 
 /* then import flux normally */
-@import "flux";</code></pre><p>Note: I'm prefixing the class name variables with the <code>flux</code> namespace for an extra level of protection since Sass variables live in the global scope. Doing this isn't 100% necessary, but I recommend it.</p><h2>JavaScript Plugins</h2><p>Most component libraries come with a least some JavaScript that dynamically creates its own markup. If these components offer Sass variables for dynamic selectors, they'll also need to offer JavaScript variables to change the class names there as well.</p><p>Since components typically expose a defaults object, the class name variable could be a property on that object, allowing users of the library to change it globally in one place.</p><p>For example, if messagebox is a jQuery plugin, you might use code like this to dynamically change the class name:</p><pre class="highlight"><code class="language-javascript">$.fn.messagebox.defaults.className = "some-other-name";</code></pre><h2>What about static markup?</h2><p>At this point I'm sure some readers are wondering whether I've overlooked half the problem. Dynamically building selectors is one thing, but what if the old class name is in hundreds of places in the HTML, how do you deal with that?</p><p>The truth is I don't think that situation would be very common. The typical use case for dynamic selectors is when you want to start using a third party library, haven't written any code for it yet, and realize there would be conflicts. In this use case, you're picking a class name that <em>isn't</em> in the HTML precisely to avoid conflict.</p><p>The only time I could see dynamic selectors leading to a lot of find-and-replace in the HTML is if you change your mind and suddenly decide you want to name your classes something else, in which case it's not really the library author's fault. Also, if you're repeating a lot of the same markup for each component and you think it's likely you'll change your mind later, this is a perfect place to abstract that markup into templates, partials, or helpers.</p><h2>Summary</h2><p>All component libraries that use preprocessors should offer the option of dynamic selectors. It allows for a short and simple name for the majority of users and only requires extra effort for the ones who need it. It doesn't impose a verbose prefix on anyone and keeps the barrier to entry low. Those who want to make changes can dive into the Sass file, and those who just want to use it out of the box can simply grab the compiled CSS. Everybody wins.</p><p>I'd love to see libraries like Bootstrap adopt this approach. Bootstrap already uses a jQuery-like <code>noConflict()</code> method in each of its JavaScript plugins. Dynamic selectors wouldn't be much harder and would go a long way to increase its compatibility.</p><p>I believe that website authors should be able to write their markup however they want. They should be able to choose whatever names they want without the fear that someday those names will conflict with a third party library. It should be the responsibility of library and framework authors to make their code as compatible as possible.</p><p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=Dynamic%20Selectors&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fdynamic-selectors%2F&via=philwalton">share it on Twitter</a>.</p><div id="disqus_thread" class="l-comments"></div> <script>/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-var disqus_shortname="philipwalton";(function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="http://"+disqus_shortname+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript> <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></article> </section><aside class="l-widgets" role="complementary"><div class="widget"><p>Hello, I'm <strong>Philip Walton</strong>. I work as front end software engineer for <a href="http://appfolio.com/about">AppFolio</a> in Santa Barbara, CA. This blog is where I write about what I learn.</p><a href="https://twitter.com/philwalton" class="twitter-follow-button" data-show-count="false" data-lang="en">Follow Me</a> <script>// Don't load the widgets when the sidebar isn't visible
-window.innerWidth>=616&&!function(e,t,n){var r,i=e.getElementsByTagName(t)[0];e.getElementById(n)||(r=e.createElement(t),r.id=n,r.src="//platform.twitter.com/widgets.js",i.parentNode.insertBefore(r,i))}(document,"script","twitter-wjs")</script></div><div class="widget"><h3 class="widget__title">Recent Articles</h3><ul><li class="post"> <a href="http://philipwalton.com/articles/dynamic-selectors/">Dynamic Selectors</a></li><li class="post"> <a href="http://philipwalton.com/articles/defending-presentational-class-names/">Defending Presentational Class Names</a></li><li class="post"> <a href="http://philipwalton.com/articles/the-future-of-oocss-a-proposal/">The Future of OOCSS: A Proposal</a></li><li class="post"> <a href="http://philipwalton.com/articles/what-no-one-told-you-about-z-index/">What No One Told You About Z-Index</a></li><li class="post"> <a href="http://philipwalton.com/articles/css-architecture/">CSS Architecture</a></li></ul></div><div class="widget"><h3 class="widget__title">Topics</h3><ul><li> <a href="http://philipwalton.com/tags/architecture/">Architecture</a> (2)</li><li> <a href="http://philipwalton.com/tags/css/">CSS</a> (5)</li><li> <a href="http://philipwalton.com/tags/html/">HTML</a> (2)</li><li> <a href="http://philipwalton.com/tags/javascript/">JavaScript</a> (1)</li><li> <a href="http://philipwalton.com/tags/oocss/">OOCSS</a> (3)</li><li> <a href="http://philipwalton.com/tags/sass/">Sass</a> (2)</li></ul></div></aside> <footer class="l-footer" role="contentinfo"><p> © 2013, <a href="http://twitter.com/philwalton">Philip Walton</a>. Built with <a href="https://github.com/mojombo/jekyll">Jekyll</a></p> </footer></div> <!--[if gte IE 9]><!--> <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script><script>hljs.initHighlightingOnLoad()</script><!--<![endif]--></body></html>
+@import &quot;flux&quot;;</code></pre>
+
+
+<p>Note: I'm prefixing the class name variables with the <code>flux</code> namespace for an extra level of protection since Sass variables live in the global scope. Doing this isn't 100% necessary, but I recommend it.</p>
+
+<h2>JavaScript Plugins</h2>
+
+<p>Most component libraries come with a least some JavaScript that dynamically creates its own markup. If these components offer Sass variables for dynamic selectors, they'll also need to offer JavaScript variables to change the class names there as well.</p>
+
+<p>Since components typically expose a defaults object, the class name variable could be a property on that object, allowing users of the library to change it globally in one place.</p>
+
+<p>For example, if messagebox is a jQuery plugin, you might use code like this to dynamically change the class name:</p>
+
+<pre class="highlight"><code class="language-javascript">$.fn.messagebox.defaults.className = &quot;some-other-name&quot;;</code></pre>
+
+
+<h2>What about static markup?</h2>
+
+<p>At this point I'm sure some readers are wondering whether I've overlooked half the problem. Dynamically building selectors is one thing, but what if the old class name is in hundreds of places in the HTML, how do you deal with that?</p>
+
+<p>The truth is I don't think that situation would be very common. The typical use case for dynamic selectors is when you want to start using a third party library, haven't written any code for it yet, and realize there would be conflicts. In this use case, you're picking a class name that <em>isn't</em> in the HTML precisely to avoid conflict.</p>
+
+<p>The only time I could see dynamic selectors leading to a lot of find-and-replace in the HTML is if you change your mind and suddenly decide you want to name your classes something else, in which case it's not really the library author's fault. Also, if you're repeating a lot of the same markup for each component and you think it's likely you'll change your mind later, this is a perfect place to abstract that markup into templates, partials, or helpers.</p>
+
+<h2>Summary</h2>
+
+<p>All component libraries that use preprocessors should offer the option of dynamic selectors. It allows for a short and simple name for the majority of users and only requires extra effort for the ones who need it. It doesn't impose a verbose prefix on anyone and keeps the barrier to entry low. Those who want to make changes can dive into the Sass file, and those who just want to use it out of the box can simply grab the compiled CSS. Everybody wins.</p>
+
+<p>I'd love to see libraries like Bootstrap adopt this approach. Bootstrap already uses a jQuery-like <code>noConflict()</code> method in each of its JavaScript plugins. Dynamic selectors wouldn't be much harder and would go a long way to increase its compatibility.</p>
+
+<p>I believe that website authors should be able to write their markup however they want. They should be able to choose whatever names they want without the fear that someday those names will conflict with a third party library. It should be the responsibility of library and framework authors to make their code as compatible as possible.</p>
+
+
+  
+  
+  <p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=Dynamic%20Selectors&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fdynamic-selectors%2F&via=philwalton">share it on Twitter</a>.
+  </p>
+
+  
+    <div id="disqus_thread" class="l-comments"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  var disqus_shortname = "philipwalton"; // required: replace example with your forum shortname
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  
+
+</article>
+      </section>
+
+      <aside class="l-widgets" role="complementary">
+
+  <div class="widget">
+
+    <p>Hello, I'm <strong>Philip Walton</strong>. I work as front end software engineer for <a href="http://appfolio.com/about">AppFolio</a> in Santa Barbara, CA. This blog is where I write about what I learn.</p>
+
+    <a href="https://twitter.com/philwalton" class="twitter-follow-button" data-show-count="false" data-lang="en">Follow Me</a>
+    <script>
+      // Don't load the widgets when the sidebar isn't visible
+      if (window.innerWidth >= 616) { // 44em @ 14px font size
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      }
+    </script>
+
+  </div>
+
+  <div class="widget">
+    <h3 class="widget__title">Recent Articles</h3>
+    <ul>
+      
+        <li class="post">
+          <a href="http://philipwalton.com/articles/dynamic-selectors/">Dynamic Selectors</a>
+        </li>
+      
+        <li class="post">
+          <a href="http://philipwalton.com/articles/defending-presentational-class-names/">Defending Presentational Class Names</a>
+        </li>
+      
+        <li class="post">
+          <a href="http://philipwalton.com/articles/the-future-of-oocss-a-proposal/">The Future of OOCSS: A Proposal</a>
+        </li>
+      
+        <li class="post">
+          <a href="http://philipwalton.com/articles/what-no-one-told-you-about-z-index/">What No One Told You About Z-Index</a>
+        </li>
+      
+        <li class="post">
+          <a href="http://philipwalton.com/articles/css-architecture/">CSS Architecture</a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="widget">
+    <h3 class="widget__title">Topics</h3>
+    <ul>
+    
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/architecture/">Architecture</a>
+        (2)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/css/">CSS</a>
+        (5)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/html/">HTML</a>
+        (2)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/javascript/">JavaScript</a>
+        (1)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>
+        (3)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/sass/">Sass</a>
+        (2)
+      </li>
+    
+    </ul>
+  </div>
+
+</aside>
+      <footer class="l-footer" role="contentinfo">
+  <p>
+    &copy; 2013, <a href="http://twitter.com/philwalton">Philip Walton</a>. Built with <a href="https://github.com/mojombo/jekyll">Jekyll</a>
+  </p>
+</footer>
+
+    </div>
+
+    
+      <!--[if gte IE 9]><!-->
+      <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
+      <script>hljs.initHighlightingOnLoad()</script>
+      <!--<![endif]-->
+    
+
+  </body>
+</html>
