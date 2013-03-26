@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>OOCSS &mdash; Philip Walton</title>
+    <title>CSS: Everything is Global and How to Deal With It &mdash; Philip Walton</title>
 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
@@ -14,7 +14,7 @@
     <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
     <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
     
-      <link rel="canonical" href="http://philipwalton.com/tags/oocss/">
+      <link rel="canonical" href="http://philipwalton.com/articles/css-everything-is-global-and-how-to-deal-with-it/">
     
 
     <meta name="description" content="Thoughts on front-end development, architecture, and the future of the web.">
@@ -66,128 +66,21 @@
     <div class="l-container">
 
       <section class="l-content" role="main">
-        <header class="page-header">
+        
+<article role="article">
+
+  <header class="page-header">
   <h1 class="page-header__title">
     
-      OOCSS
+      CSS: Everything is Global and How to Deal With It
     
   </h1>
   
-</header>
-
-<div class="article-list">
-
-  
-    
-  
-    
-  
-
-  
-    
-  
-    
-  
-    
-  
-
-  
-    
-  
-    
-  
-    
-      <article>
-        <h2 class="article-title"><a href="http://philipwalton.com/articles/defending-presentational-class-names/">Defending Presentational Class Names</a></h2>
-
-<ul class="article-meta">
+    <ul class="article-meta">
   <li>
     
     
-      <a href="http://philipwalton.com/articles/defending-presentational-class-names/"><time datetime="2013-01-24">January 24, 2013</time></a>
-    
-  </li>
-  <li>Tagged as:
-  
-  
-    
-    <a href="http://philipwalton.com/tags/css/">CSS</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/html/">HTML</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>
-  
-  </li>
-</ul>
-
-<p>Recently, Codrops, an online web design and development blog, published an article I wrote for them entitled: Defending Presentational Class Names. In the article I discuss the use of presentational classes, why we've historically avoided them, and how perhaps some situations might warrant their use today. I hope &hellip; <a rel="full-article" href="http://philipwalton.com/articles/defending-presentational-class-names/">[more]</a></p>
-      </article>
-    
-  
-
-  
-    
-  
-    
-      <article>
-        <h2 class="article-title"><a href="http://philipwalton.com/articles/the-future-of-oocss-a-proposal/">The Future of OOCSS: A Proposal</a></h2>
-
-<ul class="article-meta">
-  <li>
-    
-    
-      <a href="http://philipwalton.com/articles/the-future-of-oocss-a-proposal/"><time datetime="2013-01-17">January 17, 2013</time></a>
-    
-  </li>
-  <li>Tagged as:
-  
-  
-    
-    <a href="http://philipwalton.com/tags/css/">CSS</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/javascript/">JavaScript</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/sass/">Sass</a>
-  
-  </li>
-</ul>
-
-<p>In CSS we often code the same visual components over and over again &mdash; even within the same project. It's embarrassing how many separate times in my career I've coded a two-column layout, or tabbed navigation, or a dropdown menu, or a popup (and the list goes on). To deal &hellip; <a rel="full-article" href="http://philipwalton.com/articles/the-future-of-oocss-a-proposal/">[more]</a></p>
-      </article>
-    
-  
-    
-  
-    
-  
-
-  
-    
-  
-
-  
-    
-  
-    
-  
-    
-  
-    
-      <article>
-        <h2 class="article-title"><a href="http://philipwalton.com/articles/css-architecture/">CSS Architecture</a></h2>
-
-<ul class="article-meta">
-  <li>
-    
-    
-      <a href="http://philipwalton.com/articles/css-architecture/"><time datetime="2012-11-16">November 16, 2012</time></a>
+      <time datetime="2013-03-25">March 25, 2013</time>
     
   </li>
   <li>Tagged as:
@@ -197,23 +90,44 @@
     <a href="http://philipwalton.com/tags/architecture/">Architecture</a>,
   
     
-    <a href="http://philipwalton.com/tags/css/">CSS</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/html/">HTML</a>,
-  
-    
-    <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>
+    <a href="http://philipwalton.com/tags/css/">CSS</a>
   
   </li>
 </ul>
+  
+</header>
 
-<p>To many Web developers, being good at CSS means you can take a visual mock-up and replicate it perfectly in code. You don’t use tables, and you pride yourself on using as few images as possible. If you’re really good, you use the latest and greatest techniques like media queries, transitions and transforms &hellip; <a rel="full-article" href="http://philipwalton.com/articles/css-architecture/">[more]</a></p>
-      </article>
-    
+  <p>Everything in CSS is global. Every line you write has the potential to conflict with every other line. Because of this, CSS is often the hardest part of scaling any Web application or working on a development team.</p>
+
+<p>In my article published on the <a href="http://www.adobe.com/devnet/html5/articles/css-everything-is-global-and-how-to-deal-with-it.html">Adobe Developer Network</a>, I discuss some strategies for dealing with the global nature of CSS. I talk about finding the balance between paranoid over-protection and just asking for trouble. I also talk about some exciting things already making their way into the CSS spec that will provide real encapsulation in the future.</p>
+
+<p>I hope you find it useful, and as always I welcome your feedback.</p>
+
+
+  
+  
+  <p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=CSS%3A%20Everything%20is%20Global%20and%20How%20to%20Deal%20With%20It&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fcss-everything-is-global-and-how-to-deal-with-it%2F&via=philwalton">share it on Twitter</a>.
+  </p>
+
+  
+    <div id="disqus_thread" class="l-comments"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  var disqus_shortname = "philipwalton"; // required: replace example with your forum shortname
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
   
 
-</div>
+</article>
       </section>
 
       <aside class="l-widgets" role="complementary">
@@ -304,6 +218,11 @@
 
     </div>
 
+    
+      <!--[if gte IE 9]><!-->
+      <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
+      <script>hljs.initHighlightingOnLoad()</script>
+      <!--<![endif]-->
     
 
   </body>

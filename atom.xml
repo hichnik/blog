@@ -4,13 +4,22 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-02-22T08:54:10-08:00</updated>
+ <updated>2013-03-25T21:45:29-07:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
    <email>philip@philipwalton.com</email>
  </author>
 
+ 
+ <entry>
+   <title>CSS: Everything is Global and How to Deal With It</title>
+   <link href="http://philipwalton.com/articles/css-everything-is-global-and-how-to-deal-with-it/"/>
+   <updated>2013-03-25T20:21:57-07:00</updated>
+   <id>http://philipwalton.com/articles/css-everything-is-global-and-how-to-deal-with-it/</id>
+   
+   <content type="html">Everything in CSS is global. Every line you write has the potential to conflict with every other line. Because of this, CSS is often the hardest part of scaling any Web application or working on a development team. In my article published on the Adobe Developer Network, I discuss &amp;hellip; &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/css-everything-is-global-and-how-to-deal-with-it/&quot;&gt;[more]&lt;/a&gt;</content>
+ </entry>
  
  <entry>
    <title>Dynamic Selectors</title>
