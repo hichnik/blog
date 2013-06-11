@@ -4,7 +4,7 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-06-11T00:08:10-07:00</updated>
+ <updated>2013-06-11T08:41:21-07:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
@@ -15,7 +15,7 @@
  <entry>
    <title>Introducing HTML Inspector</title>
    <link href="http://philipwalton.com/articles/introducing-html-inspector/"/>
-   <updated>2013-06-05T13:56:03-07:00</updated>
+   <updated>2013-06-11T01:22:52-07:00</updated>
    <id>http://philipwalton.com/articles/introducing-html-inspector/</id>
    
    <content type="html">Web browsers are incredibly forgiving of the HTML you give them. Missing attributes, misspelled tags, illegal characters, it doesn't matter. They'll bend over backwards to make it work. This leniency has led a lot of people to believe that proper HTML doesn't matter. At least not nearly as much as &amp;hellip; &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/introducing-html-inspector/&quot;&gt;[more]&lt;/a&gt;</content>
