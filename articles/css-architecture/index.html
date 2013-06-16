@@ -10,23 +10,18 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name=viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-
     <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
     <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
     
       <link rel="canonical" href="http://engineering.appfolio.com/2012/11/16/css-architecture">
     
-
     <meta name="description" content="Thoughts on front-end development, architecture, and the future of the web.">
-
     <!--[if lt IE 9]>
     <script src="http://philipwalton.com/assets/javascripts/html5shiv.js"></script>
     <script src="http://philipwalton.com/assets/javascripts/respond.js"></script>
     <![endif]-->
-
   </head>
   <body>
-
     <header class="header" role="banner">
       <div class="l-container">
         <div class="l-header-main">
@@ -46,9 +41,7 @@
 </nav>
       </div>
     </header>
-
     <div class="l-container">
-
       <section class="l-content" role="main">
         
 <article role="article">
@@ -523,7 +516,6 @@ body.homepage .widget {
 
 </article>
       </section>
-
       <aside class="l-widgets" role="complementary">
 
   <div class="widget">
@@ -603,16 +595,7 @@ body.homepage .widget {
     &copy; 2013, <a href="http://twitter.com/philwalton">Philip Walton</a>. Built with <a href="https://github.com/mojombo/jekyll">Jekyll</a>
   </p>
 </footer>
-
     </div>
-
-    
-      <!--[if gte IE 9]><!-->
-      <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
-      <script>hljs.initHighlightingOnLoad()</script>
-      <!--<![endif]-->
-    
-
     
   
     <script type="text/javascript">
@@ -634,15 +617,15 @@ body.homepage .widget {
   <script>hljs.initHighlightingOnLoad()</script>
   <!--<![endif]-->
 
-    <script id="twitter-buttons">
+    <script>
   // Don't load the widgets when the sidebar isn't visible
-  if (window.innerWidth >= 616) { // 44em @ 14px font size
+  if (window.matchMedia && window.matchMedia("(min-width: 48em)").matches) {
     !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
   }
 </script>
 
     
-  <script id="disqus_script">
+  <script>
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = "philipwalton"; // required: replace example with your forum shortname
 
