@@ -296,11 +296,11 @@
       (function() {
 
         function isLink(el) {
-          return el.nodeName.toLowerCase() == "a"
+          return el.nodeName.toLowerCase() == "a" && el.href
         }
 
         function isExternalLink(el) {
-          return !(el.protocol == location.protocol && el.host == location.host)
+          return el.href.indexOf(location.host) < 0
         }
 
         function getLinkAncestor(el) {
@@ -316,20 +316,21 @@
             , target = e.target || e.srcElement
             , link = getLinkAncestor(target)
           if (link && isExternalLink(link)) {
-             _gaq.push(['_trackEvent', 'Outbound Link', 'Click', link.href]);
+            _gaq.push(['_trackEvent', 'Outbound Link', link.href]);
           }
         }
 
         if (document.addEventListener) {
-          document.addEventListener("click", logExternalClicks)
+          document.addEventListener("mousedown", logExternalClicks)
         }
         else if (document.attachEvent) {
-          document.attachEvent("onclick", logExternalClicks)
+          document.attachEvent("onmousedown", logExternalClicks)
         }
       }())
     </script>
 
   
+
 
 
     
