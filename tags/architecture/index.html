@@ -276,6 +276,40 @@
     </div>
     
   
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21292978-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+      // track clicks on outbound hyperlinks
+      (function() {
+        var links = document.getElementsByTagName("a"), link, i = 0
+        function logExternalClicks(event) {
+          var e = event || window.event, target = e.target || e.srcElement
+          _gaq.push(['_trackEvent', 'Outbound Link', target.href]);
+        }
+        while(link = links[i++]) {
+          if (link.host != document.location.host) {
+            // add target="_blank" to fix
+            // https://github.com/philipwalton/blog/issues/38
+            link.target = "_blank"
+            // register logging on click events
+            if (document.addEventListener) {
+              document.addEventListener("click", logExternalClicks)
+            } else if (document.attachEvent) {
+              document.attachEvent("onclick", logExternalClicks)
+            }
+          }
+        }
+      }())
+    </script>
+  
 
     
     <script>
