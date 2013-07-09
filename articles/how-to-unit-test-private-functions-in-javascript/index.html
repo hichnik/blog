@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>How to Unit Test Private Functions in JavaScript &mdash; Philip Walton</title>
+
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name=viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
+    <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
+    
+      <link rel="canonical" href="http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/">
+    
+    <meta name="description" content="Thoughts on front-end development, architecture, and the future of the web.">
+    <!--[if lt IE 9]>
+    <script src="http://philipwalton.com/assets/javascripts/html5shiv.js"></script>
+    <script src="http://philipwalton.com/assets/javascripts/respond.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header class="header" role="banner">
+      <div class="l-container">
+        <div class="l-header-main">
+  <h1 class="header__title"><a href="http://philipwalton.com/" rel="home">Philip Walton</a></h1>
+  <h2 class="header__description">On Front End Web Development</h2>
+</div>
+        
+    
+
+
+<nav class="l-header-nav" role="navigation">
+  <ul class="nav">
+    <li><a  href="http://philipwalton.com/">Home</a></li>
+    <li><a class="is-selected" href="http://philipwalton.com/articles/">Articles</a></li>
+    <li><a  href="http://philipwalton.com/about/">About</a></li>
+  </ul>
+</nav>
+      </div>
+    </header>
+    <div class="l-container">
+      <section class="l-content" role="main">
+        
+<article role="article">
+
+  <header class="page-header">
+  <h1 class="page-header__title">
+    
+      How to Unit Test Private Functions in JavaScript
+    
+  </h1>
+  
+    <ul class="article-meta">
+  <li>
+    
+    
+      <time datetime="2013-07-08">July 08, 2013</time>
+    
+  </li>
+  <li>Tagged as:
+  
+  
+    
+    <a href="http://philipwalton.com/tags/javascript/">JavaScript</a>
+  
+  </li>
+</ul>
+  
+</header>
+
+  <p>JavaScript's closures provide an excellent way to make variables and functions private, keeping them out of the global scope. This is particularly important in the browser because all scripts share the same scope, and it's quite easy to inadvertently pick a variable or function name used by another library.</p>
+
+<p>The problem, however, is that when functions are hidden inside a closure, it's very difficult to test them.</p>
+
+<p>Here's an example:</p>
+
+<pre class="highlight"><code class="language-javascript">var myModule = (function() {
+
+  function foo() {
+    // private function `foo` inside closure
+    return &quot;foo&quot;
+  }
+
+  return {
+    bar: function() {
+      // public function `bar` returned from closure
+      return &quot;bar&quot;
+    }
+  }
+}())</code></pre>
+
+
+<p>The immediately invoked function expression returns an object that exposes the <code>bar</code> function globally, but the <code>foo</code> function remains inaccessible to any code not appearing inside the immediately invoked function.</p>
+
+<p>In other words, given the above code, writing a unit test for <code>bar</code> is easy, but writing a unit test for <code>foo</code> is impossible. So what can you do? How can you test <code>foo</code>?</p>
+
+<p>If you search Stack Overflow for a solution to this problem, you'll basically find the following two suggestions repeated over and over again:</p>
+
+<ol>
+<li>Don't test private functions (since they're implementation details)</li>
+<li>If you must test them, make them public</li>
+</ol>
+
+
+<p>Personally, I don't agree with these statements.</p>
+
+<p>While they may apply to some contexts, they certainly don't make sense for every project. And from my own experience writing JavaScript, I've encountered numerous situations where I needed to test a function but still wanted it hidden from the public API.</p>
+
+<p>I believe any real solution to this problem shouldn't require developers to compromise their design patterns for the sake of testing, nor should it require lesser test coverage just to produce a nicer API. We should be able to have it both ways.</p>
+
+<p>Below is the solution I use that I think handles these issues quite nicely.</p>
+
+<h2>My Solution</h2>
+
+<p>Given the nature of JavaScript scoping, we know it's impossible to access local variables from outside of a function closure without a reference to those variables. So any possible solution must do one of two things:</p>
+
+<ol>
+<li>Put the test code itself inside the closure</li>
+<li>Add code inside the closure that stores references to the local variables on existing objects in the outer scope.</li>
+</ol>
+
+
+<p>Option one is not really a good solution because you usually want to keep all your test code together in the same place. Mixing your tests with the production code would make it significantly harder to maintain and organize.</p>
+
+<p>On the other hand, option two kinda defeats the purpose of encapsulating the code in the first place.</p>
+
+<p>But what if there were a way to use option two conditionally? What if we could write code inside a closure that gives our test code access to the private functions we care about, but then remove that code when we deploy to production?</p>
+
+<p>If you're using a build system, you can do exactly that.</p>
+
+<h3>Different Builds for Testing and Production</h3>
+
+<p>Consider the above myModule example with the following code additions (changes highlighted):</p>
+
+<pre class="highlight"><code class="language-javascript">var myModule = (function() {
+
+  function foo() {
+    // private function `foo` inside closure
+    return &quot;foo&quot;
+  }
+
+  var api = {
+    bar: function() {
+      // public function `bar` returned from closure
+      return &quot;bar&quot;
+    }
+  }
+
+  <em>/* test-code */</em>
+  <em>api._foo = foo</em>
+  <em>/* end-test-code */</em>
+
+  return api
+}())</code></pre>
+
+
+<p>As you can see, the above changes expose the <code>foo</code> function on the module, but do so in a way that can be easily identified by the surrounding comments and stripped out later.</p>
+
+<p>The strategy here is to write your code exactly how you'd like it to appear when released, then add on whatever bridge code you need to expose the parts you want to test.</p>
+
+<h3>An Example Implementation</h3>
+
+<p>Assuming you're already using a build system (if you're not I highly recommend doing so), adding an extra step to strip out test-only code blocks is relatively easy. Below is an example of how you could implement this using <a href="http://gruntjs.com/">GruntJS</a> and the <a href="https://github.com/philipwalton/grunt-strip-code">grunt-strip-code</a> plugin.</p>
+
+<p>First, make sure to add the task as a dependency to your project:</p>
+
+<pre class="highlight"><code class="language-bash">npm install grunt-strip-code --save-dev</code></pre>
+
+
+<p>Then enable it inside your Gruntfile:</p>
+
+<pre class="highlight"><code class="language-javascript">grunt.loadNpmTasks('grunt-strip-code');</code></pre>
+
+
+<p>Next, add your project specific data to the <code>initConfig</code> object:</p>
+
+<pre class="highlight"><code class="language-javascript">grunt.initConfig({
+  strip_code: {
+    options: {
+      start_comment: &quot;test-code&quot;,
+      end_comment: &quot;end-test-code&quot;,
+    },
+    your_target: {
+      // a list of files you want to strip code from
+      src: &quot;dist/*.js&quot;
+    }
+  }
+})</code></pre>
+
+
+<p>Finally, add your new task to the deploy step (making sure not to add it to the testing step):</p>
+
+<pre class="highlight"><code class="language-javascript">grunt.registerTask(&quot;test&quot;, [
+  &quot;concat&quot;,
+  &quot;jshint&quot;,
+  &quot;jasmine&quot;
+])
+grunt.registerTask(&quot;deploy&quot;, [
+  &quot;concat&quot;,
+  <em>&quot;strip-code&quot;</em>,
+  &quot;jshint&quot;,
+  &quot;uglify&quot;
+])</code></pre>
+
+
+<p>Now, when you test your code, those test-only blocks will be in the source like you want, but they'll be stripped out when you deploy to production.</p>
+
+<p>That means you can still maintain 100% test coverage without sacrificing your code structure or design.</p>
+
+<p>It's the best of both worlds.</p>
+
+<h3>A Word of Caution</h3>
+
+<p>There are a lot of pros to this approach, and I certainly favor it over exposing your private methods in an awkward way or not testing them at all, but there is a downside that you should be aware of.</p>
+
+<p>Anytime you change your code between when it's tested and when it's deployed, you run the risk of missing something. If you weren't careful and part of your library depended on the code you removed, your library would break in production, and you might not know about it until long after it shipped.</p>
+
+<p>Luckily, there are two relatively simple strategies to help prevent this. The easiest way is to assign your test only methods to an object namespace that is obviously not intended for normal use. For example:</p>
+
+<pre class="highlight"><code class="language-javascript">/* test-code */
+<em>api.__testonly__.foo = foo</em>
+/* end-test-code */</code></pre>
+
+
+<p>Using a namespace like <code>__testonly__</code> not only makes the intent obvious, it also makes it possible to add an additional step to the build process to make sure no <code>__testonly__</code> code appears in the final release.</p>
+
+<p>Another strategy is to split your test suite into two phases. The first phase tests the private methods. The second phase strips the code and then tests the public methods. Here's an example of that:</p>
+
+<pre class="highlight"><code class="language-javascript">grunt.registerTask(&quot;test&quot;, [
+  &quot;concat&quot;,
+  &quot;jshint&quot;,
+  <em>&quot;jasmine:private&quot;</em>,
+  <em>&quot;strip-code&quot;</em>,
+  &quot;jshint&quot;,
+  <em>&quot;jasmine:public&quot;</em>
+])</code></pre>
+
+
+<p>Though not always possible (depending on your test setup), this is probably the safest method as it still tests the public API after stripping out the test-only code.</p>
+
+<p>These two strategies may not be necessary if you're the only developer or working on a small team, but the more people you have contributing the more caution you'll need to take. Obviously it's up to you to determine the right approach for your situation.</p>
+
+<h2>Conclusion</h2>
+
+<p>To summarize, due to the nature of JavaScript it's important to not expose too many variables and functions in the global namespace. Using function closures and the module pattern is a great way to hide functionality, but it also makes it harder to test that functionality.</p>
+
+<p>Even though that code may be an implementation detail, merely testing the public API may not give you the peace of mind you need when making code changes in the future.</p>
+
+<p>Testing your code is important, even if it takes a little bit of extra work. This article shows you how you can use a build system to test your private functions without compromising encapsulation and modularity.</p>
+
+
+  
+  
+  <p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=How%20to%20Unit%20Test%20Private%20Functions%20in%20JavaScript&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fhow-to-unit-test-private-functions-in-javascript%2F&via=philwalton">share it on Twitter</a>.
+  </p>
+
+  
+    <div id="disqus_thread" class="l-comments"></div>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  
+
+</article>
+      </section>
+      <aside class="l-widgets" role="complementary">
+
+  <div class="widget">
+
+    <p>Hello, I'm <strong>Philip Walton</strong>. I work as front end software engineer for <a href="http://appfolio.com/about">AppFolio</a> in Santa Barbara, CA. This blog is where I write about what I learn.</p>
+
+    <a href="https://twitter.com/philwalton" class="twitter-follow-button" data-show-count="false" data-lang="en">Follow Me</a>
+
+  </div>
+
+  <div class="widget">
+    <h3 class="widget__title">Recent Articles</h3>
+    <ul>
+      
+        <li>
+          <a href="http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/">How to Unit Test Private Functions in JavaScript</a>
+        </li>
+      
+        <li>
+          <a href="http://philipwalton.com/articles/introducing-html-inspector/">Introducing HTML Inspector</a>
+        </li>
+      
+        <li>
+          <a href="http://philipwalton.com/articles/css-everything-is-global-and-how-to-deal-with-it/">CSS: Everything is Global and How to Deal With It</a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="widget">
+    <h3 class="widget__title">Topics</h3>
+    <ul>
+    
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/architecture/">Architecture</a>
+        (3)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/css/">CSS</a>
+        (6)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/html/">HTML</a>
+        (3)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/javascript/">JavaScript</a>
+        (3)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>
+        (3)
+      </li>
+    
+      <li>
+        
+        <a href="http://philipwalton.com/tags/sass/">Sass</a>
+        (2)
+      </li>
+    
+    </ul>
+  </div>
+
+</aside>
+      <footer class="l-footer" role="contentinfo">
+  <p>
+    &copy; 2013, <a href="http://twitter.com/philwalton">Philip Walton</a>. Built with <a href="https://github.com/mojombo/jekyll">Jekyll</a>
+  </p>
+</footer>
+    </div>
+    
+
+  
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21292978-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+      // track clicks on outbound hyperlinks
+      (function() {
+
+        var links = document.getElementsByTagName("a")
+          , link
+          , i = 0
+
+        function isLink(el) {
+          return el.nodeName.toLowerCase() == "a" && el.href
+        }
+
+        function isExternalLink(el) {
+          return el.href.indexOf(location.host) < 0
+        }
+
+        function getLinkAncestor(el) {
+          if (isLink(el)) return el
+          while (el.parentNode && el.parentNode.nodeType == 1) {
+            if (isLink(el)) return el
+            el = el.parentNode
+          }
+        }
+
+        function logExternalClicks(event) {
+          var e = event || window.event
+            , target = e.target || e.srcElement
+            , link = getLinkAncestor(target)
+          if (link && isExternalLink(link)) {
+            _gaq.push(['_trackEvent', 'Outbound Link', link.href]);
+          }
+        }
+
+        // add target="_blank" to external links
+        while(link = links[i++]) {
+          if (link.target != "_blank" && isExternalLink(link)) {
+            link.target = "_blank"
+          }
+        }
+
+        // register logging on click events
+        if (document.addEventListener) {
+          document.addEventListener("click", logExternalClicks)
+        }
+        else if (document.attachEvent) {
+          document.attachEvent("onclick", logExternalClicks)
+        }
+
+      }())
+    </script>
+
+  
+
+
+    
+  <!--[if gte IE 9]><!-->
+  <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad()</script>
+  <!--<![endif]-->
+
+    <script>
+  // Don't load the widgets when the sidebar isn't visible
+  if (window.matchMedia && window.matchMedia("(min-width: 48em)").matches) {
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  }
+</script>
+
+    
+  <script>
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = "philipwalton"; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  </body>
+</html>

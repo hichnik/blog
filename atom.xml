@@ -4,13 +4,22 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-07-01T23:11:28-07:00</updated>
+ <updated>2013-07-09T08:34:45-07:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
    <email>philip@philipwalton.com</email>
  </author>
 
+ 
+ <entry>
+   <title>How to Unit Test Private Functions in JavaScript</title>
+   <link href="http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/"/>
+   <updated>2013-07-08T16:28:18-07:00</updated>
+   <id>http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/</id>
+   
+   <content type="html"> &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/&quot;&gt;[more]&lt;/a&gt;</content>
+ </entry>
  
  <entry>
    <title>Introducing HTML Inspector</title>
