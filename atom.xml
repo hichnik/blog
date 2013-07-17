@@ -4,7 +4,7 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-07-17T00:51:52-07:00</updated>
+ <updated>2013-07-17T00:54:53-07:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
@@ -15,7 +15,7 @@
  <entry>
    <title>Why I Test Private Functions In JavaScript</title>
    <link href="http://philipwalton.com/articles/why-i-test-private-functions-in-javascript/"/>
-   <updated>2013-07-16T17:47:00-07:00</updated>
+   <updated>2013-07-17T01:47:00-07:00</updated>
    <id>http://philipwalton.com/articles/why-i-test-private-functions-in-javascript/</id>
    
    <content type="html"> &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/why-i-test-private-functions-in-javascript/&quot;&gt;[more]&lt;/a&gt;</content>
