@@ -4,13 +4,22 @@
  <title>Philip Walton</title>
  <link href="http://philipwalton.com/atom.xml" rel="self"/>
  <link href="http://philipwalton.com/"/>
- <updated>2013-09-29T18:57:39-07:00</updated>
+ <updated>2013-10-03T22:49:19-07:00</updated>
  <id>http://philipwalton.com/</id>
  <author>
    <name>Philip Walton</name>
    <email>philip@philipwalton.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Solved by Flexbox</title>
+   <link href="http://philipwalton.com/articles/solved-by-flexbox/"/>
+   <updated>2013-10-03T15:59:16-07:00</updated>
+   <id>http://philipwalton.com/articles/solved-by-flexbox/</id>
+   
+   <content type="html"> &lt;a rel=&quot;full-article&quot; href=&quot;http://philipwalton.com/articles/solved-by-flexbox/&quot;&gt;[more]&lt;/a&gt;</content>
+ </entry>
  
  <entry>
    <title>Decoupling Your HTML, CSS, and JavaScript</title>
