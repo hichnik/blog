@@ -1,443 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-    <title>What No One Told You About Z-Index &mdash; Philip Walton</title>
-
-    <!-- http://t.co/dKP3o1e -->
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <meta name=viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-    <link href="http://philipwalton.com/assets/stylesheets/application.css" rel="stylesheet" type="text/css">
-    <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="" type="application/atom+xml">
-    
-      <link rel="canonical" href="http://philipwalton.com/articles/what-no-one-told-you-about-z-index/">
-    
-    <meta name="description" content="Thoughts on front-end development, architecture, and the future of the web.">
-    <!--[if lt IE 9]>
-    <script src="http://philipwalton.com/assets/javascripts/html5shiv.js"></script>
-    <script src="http://philipwalton.com/assets/javascripts/respond.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <header class="header" role="banner">
-      <div class="l-container">
-        <div class="l-header-main">
-  <h1 class="header__title"><a href="http://philipwalton.com/" rel="home">Philip Walton</a></h1>
-  <h2 class="header__description">On Web Development and Open-Source</h2>
-</div>
-        
-    
-
-
-<nav class="l-header-nav" role="navigation">
-  <ul class="nav">
-    <li><a  href="http://philipwalton.com/">Home</a></li>
-    <li><a class="is-selected" href="http://philipwalton.com/articles/">Articles</a></li>
-    <li><a  href="http://philipwalton.com/about/">About</a></li>
-  </ul>
-</nav>
-      </div>
-    </header>
-    <div class="l-container">
-      <section class="l-content" role="main">
-        
-<article role="article">
-
-  <header class="page-header">
-  <h1 class="page-header__title">
-    
-      What No One Told You About Z-Index
-    
-  </h1>
-  
-    <ul class="article-meta">
-  <li>
-    
-    
-      <time datetime="2012-12-22">December 22, 2012</time>
-    
-  </li>
-  
-  
-  
-    <li>Tagged as:
-    
-      
-      <a href="http://philipwalton.com/tags/css/">CSS</a>
-    
-    </li>
-  
-</ul>
-  
-</header>
-
-  <p>The problem with z-index is that very few people understand how it really works. It's not complicated, but it if you've never taken the time to read its specification, there are almost certainly crucial aspects that you're completely unaware of.</p>
-
-<p>Don't believe me? Well, see if you can solve this problem:</p>
-
-<h2>The Problem</h2>
-
-<p>In the following HTML you have three <code>&lt;div&gt;</code> elements, and each <code>&lt;div&gt;</code> contains a single <code>&lt;span&gt;</code> element. Each <code>&lt;span&gt;</code> is given a background color &mdash; red, green, and blue respectively. Each <code>&lt;span&gt;</code> is also positioned absolutely near the top left of the document, slightly overlapping the other <code>&lt;span&gt;</code> elements so you can see which ones are stacked in front of which. The first <code>&lt;span&gt;</code> has a z-index value of <code>1</code>, while the other two do not have any z-index set.</p>
-
-<p>Here's what the HTML and basic CSS look like. I've also included a visual demo (via <a href="http://codepen.io">Codepen</a>) with the full CSS below:</p>
-
-<pre class="highlight"><code class="language-">&lt;div&gt;
-  &lt;span class=&quot;red&quot;&gt;Red&lt;/span&gt;
-&lt;/div&gt;
-&lt;div&gt;
-  &lt;span class=&quot;green&quot;&gt;Green&lt;/span&gt;
-&lt;/div&gt;
-&lt;div&gt;
-  &lt;span class=&quot;blue&quot;&gt;Blue&lt;/span&gt;
-&lt;/div&gt;</code></pre>
-
-
-
-
-<pre class="highlight"><code class="language-">.red, .green, .blue {
-  position: absolute;
-}
-.red {
-  background: red;
-  z-index: 1;
-}
-.green {
-  background: green;
-}
-.blue {
-  background: blue;
-}</code></pre>
-
-
-
-
-<div class="codepen-wrapper">
-  <pre class="codepen" data-height="240" data-type="result" data-href="ksBaI" data-user="philipwalton"><code></code></pre>
-</div>
-
-
-<p><strong>Here's the challenge:</strong> try to see if you can make the red <code>&lt;span&gt;</code> element stack behind the blue and green <code>&lt;span&gt;</code> elements without breaking any of the following rules:</p>
-
-<ul>
-<li>Do not alter the HTML markup in any way.</li>
-<li>Do not add/change the z-index property of any element.</li>
-<li>Do not add/change the position property of any element.</li>
-</ul>
-
-
-<p>To see if you can figure it out, click the <em>edit on Codepen</em> link above and play around with it for a bit. If you've succeeded, it should look like the example below.</p>
-
-<p><em>Warning: Don't click on the CSS tab of the example below or it will give away the answer.</em></p>
-
-<div class="codepen-wrapper">
-  <pre class="codepen" data-height="240" data-type="result" data-href="dfCtb" data-user="philipwalton" data-safe="true"><code></code></pre>
-</div>
-
-
-<h2>The Solution</h2>
-
-<p>The solution is to add an opacity value less than <code>1</code> to the first <code>&lt;div&gt;</code> (the parent of the red <code>&lt;span&gt;</code>). Here is the CSS that was added to the Codepen above:</p>
-
-<pre class="highlight"><code class="language-">div:first-child {
-  opacity: .99;
-}</code></pre>
-
-
-<p>If you're scratching your head right now in shock and disbelief that opacity would have any effect on which elements are stacked in front of which, welcome to the club. I was similarly shocked when I first stumbled upon this issue.</p>
-
-<p>Hopefully the rest of this article will make things a little more clear.</p>
-
-<h2>Stacking Order</h2>
-
-<p>Z-index seems so simple: elements with a higher z-index are stacked in front of elements with a lower z-index, right? Well, actually, no. This is part of the problem with z-index. It appears so simple, so most developers don't take the time to read the rules.</p>
-
-<p>Every element in an HTML document can be either in front of or behind every other element in the document. This is known as the stacking order. The rules to determine this order are pretty clearly defined in the spec, but as I've already stated, they're not fully understood by most developers.</p>
-
-<p>When the z-index and position properties aren't involved, the rules are pretty simple: basically, the stacking order is the same as the order of appearance in the HTML. (OK, it's actually a <a href="http://www.w3.org/TR/CSS2/zindex.html">little more complicated</a> than that, but as long as you're not using negative margins to overlap inline elements, you probably won't encounter the edge cases.)</p>
-
-<p>When you introduce the position property into the mix, any positioned elements (and their children) are displayed in front of any non-positioned elements. (To say an element is "positioned" means that it has a position value other than <code>static</code>, e.g., <code>relative</code>, <code>absolute</code>, etc.)</p>
-
-<p>Finally, when z-index is involved, things get a little trickier. At first it's natural to assume elements with higher z-index values are in front of elements with lower z-index values, and any element with a z-index is in front of any element without a z-index, but it's not that simple. First of all, z-index only works on positioned elements. If you try to set a z-index on an element with no position specified, it will do nothing. Secondly, z-index values can create stacking contexts, and now suddenly what seemed simple just got a lot more complicated.</p>
-
-<h2>Stacking Contexts</h2>
-
-<p>Groups of elements with a common parent that move forward or backward together in the stacking order make up what is known as a stacking context. A full understanding of stacking contexts is key to really grasping how z-index and the stacking order work.</p>
-
-<p>Every stacking context has a single HTML element as its root element. When a new stacking context is formed on an element, that stacking context confines all of its child elements to a particular place in the stacking order. That means that if an element is contained in a stacking context at the bottom of the stacking order, there is no way to get it to appear in front of another element in a different stacking context that is higher in the stacking order, even with a z-index of a billion!</p>
-
-<p>New stacking contexts can be formed on an element in one of three ways:</p>
-
-<ul>
-<li>When an element is the root element of a document (the <code>&lt;html&gt;</code> element)</li>
-<li>When an element has a position value other than <code>static</code> and a z-index value other than <code>auto</code></li>
-<li>When an element has an opacity value less than <code>1</code></li>
-</ul>
-
-
-<p>The first and second ways to form stacking context make a lot of sense and are generally understood by Web developers (even if they don't know what they're called).</p>
-
-<p>The third way (opacity) is almost never mentioned outside of w3c specification documents.</p>
-
-<p class="callout">
-  <strong>Update:</strong> In addition to opacity, several newer CSS properties also create stacking contexts. These include: <a href="http://www.w3.org/TR/css3-transforms/">transforms</a>, <a href="http://www.w3.org/TR/filter-effects/">filters</a>, <a href="http://www.w3.org/TR/css3-regions/">css-regions</a>, <a href="http://www.w3.org/TR/css3-page/">paged media</a>, and possibly others. As a general rule, it seems that if a CSS property requires rendering in an offscreen context, it must create a new stacking context.
-</p>
-
-
-<h2>Determining an Element's Position in the Stacking Order</h2>
-
-<p>Actually determining the global stacking order for all elements on a page (including borders, backgrounds, text nodes, etc.) is extremely complicated and far beyond the scope of this article (again, I refer you to <a href="http://www.w3.org/TR/CSS2/zindex.html">the spec</a>).</p>
-
-<p>But for most intents and purposes, a basic understanding of the order can go a long way and help keep CSS development predictable. So let's start by breaking the order down into individual stacking contexts.</p>
-
-<h3>Stacking Order Within the Same Stacking Context</h3>
-
-<p>Here are the basic rules to determine stacking order within a single stacking context (from back to front):</p>
-
-<ol>
-<li>The stacking context's root element</li>
-<li>Positioned elements (and their children) with negative z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li>
-<li>Non-positioned elements (ordered by appearance in the HTML)</li>
-<li>Positioned elements (and their children) with a z-index value of <code>auto</code> (ordered by appearance in the HTML)</li>
-<li>Positioned elements (and their children) with positive z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li>
-</ol>
-
-
-<p><strong>Note:</strong> positioned elements with negative z-indexes are ordered first within a stacking context, which means they appear behind all other elements. Because of this, it becomes possible for an element to appear behind its own parent, which is normally not possible. This will only work if the element's parent is in the same stacking context and is not the root element of that stacking context. A great example of this is Nicolas Gallagher's <a href="http://nicolasgallagher.com/css-drop-shadows-without-images/demo/">CSS drop-shadows without images</a>.</p>
-
-<h3>Global Stacking Order</h3>
-
-<p>With a firm understanding of how/when new stacking contexts are formed as well as a grasp of the stacking order within a stacking context, figuring out where a particular element will appear in the global stacking order isn't so bad.</p>
-
-<p>The key to avoid getting tripped up is being able to spot when new stacking contexts are formed. If you're setting a z-index of a billion on an element and it's not moving forward in the stacking order, take a look up its ancestor tree and see if any of its parents form stacking contexts. If they do, your z-index of a billion isn't going to do you any good.</p>
-
-<h2>Wrapping Up</h2>
-
-<p>Getting back to the original problem, I've recreated the HTML structure adding comments within each tag indicating its place in the stacking order. This order is assuming the original CSS.</p>
-
-<pre class="highlight"><code class="language-">&lt;div&gt;&lt;!-- 1 --&gt;
-  &lt;span class=&quot;red&quot;&gt;&lt;!-- 6 --&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;div&gt;&lt;!-- 2 --&gt;
-  &lt;span class=&quot;green&quot;&gt;&lt;!-- 4 --&gt;&lt;span&gt;
-&lt;/div&gt;
-&lt;div&gt;&lt;!-- 3 --&gt;
-  &lt;span class=&quot;blue&quot;&gt;&lt;!-- 5 --&gt;&lt;/span&gt;
-&lt;/div&gt;</code></pre>
-
-
-<p>When we add the opacity rule to the first <code>&lt;div&gt;</code>, the stacking order changes like so:</p>
-
-<pre class="highlight"><code class="language-">&lt;div&gt;&lt;!-- 1 --&gt;
-  &lt;span class=&quot;red&quot;&gt;&lt;!-- 1.1 --&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;div&gt;&lt;!-- 2 --&gt;
-  &lt;span class=&quot;green&quot;&gt;&lt;!-- 4 --&gt;&lt;span&gt;
-&lt;/div&gt;
-&lt;div&gt;&lt;!-- 3 --&gt;
-  &lt;span class=&quot;blue&quot;&gt;&lt;!-- 5 --&gt;&lt;/span&gt;
-&lt;/div&gt;</code></pre>
-
-
-<p><code>span.red</code> used to be <code>6</code> but it's changed to <code>1.1</code>. I've used dot notation to show that a new stacking context was formed and <code>span.red</code> is now the first element within that new context.</p>
-
-<p>Hopefully it's now a little more clear why the red box moved behind the other boxes. The original example contained only two stacking contexts, the root one and the one formed on <code>span.red</code>. When we added opacity to the parent element of <code>span.red</code> we formed a third stacking context and, as a result, the z-index value on <code>span.red</code> only applied within that new context. Because the first <code>&lt;div&gt;</code> (the one we applied opacity to) and its sibling elements do not have position or z-index values set, their stacking order is determined by their source order in the HTML, which means the first <code>&lt;div&gt;</code>, and all the elements contained within its stacking context, are rendered behind the second and third <code>&lt;div&gt;</code> elements.</p>
-
-<h2>Additional Resources</h2>
-
-<ul>
-<li><a href="http://www.w3.org/TR/CSS2/zindex.html">Elaborate description of Stacking Contexts</a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/CSS/Understanding_z-index/The_stacking_context">The stacking context</a></li>
-<li><a href="http://coding.smashingmagazine.com/2009/09/15/the-z-index-css-property-a-comprehensive-look/">The Z-Index CSS Property: A Comprehensive Look</a></li>
-</ul>
-
-
-<script async src="http://codepen.io/assets/embed/ei.js"></script>
-
-
-
-  
-  
-  <p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=What%20No%20One%20Told%20You%20About%20Z-Index&url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fwhat-no-one-told-you-about-z-index%2F&via=philwalton">share it on Twitter</a>.
-  </p>
-
-  
-    <div id="disqus_thread" class="l-comments"></div>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-  
-
-</article>
-      </section>
-      <aside class="l-widgets" role="complementary">
-
-  <div class="widget">
-
-    <p>My name is Philip Walton. I'm an engineer at Google on the developer relations team and formerly, senior front-end software engineer at Appfolio. I'm passionate about open source software and the future of the Web. This blog is where I write about what I learn.</p>
-
-    <a href="https://twitter.com/philwalton" class="twitter-follow-button" data-lang="en">Follow Me</a>
-
-  </div>
-
-  <div class="widget">
-    <h3 class="widget__title">Popular Articles</h3>
-    <ul>
-      <li>
-        <a href="http://philipwalton.com/articles/what-no-one-told-you-about-z-index/">What No One Told You About Z-Index</a>
-      </li>
-      <li>
-        <a href="http://philipwalton.com/articles/decoupling-html-css-and-javascript/">Decoupling Your HTML, CSS, and JavaScript</a>
-      </li>
-      <li>
-        <a href="http://philipwalton.com/articles/introducing-html-inspector/">Introducing HTML Inspector</a>
-      </li>
-      <li>
-        <a href="http://philipwalton.com/articles/css-architecture/">CSS Architecture</a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="widget">
-    <h3 class="widget__title">Topics</h3>
-    <ul>
-    
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/architecture/">Architecture</a>
-        (3)
-      </li>
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/css/">CSS</a>
-        (8)
-      </li>
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/html/">HTML</a>
-        (4)
-      </li>
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/javascript/">JavaScript</a>
-        (5)
-      </li>
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/oocss/">OOCSS</a>
-        (3)
-      </li>
-    
-      <li>
-        
-        <a href="http://philipwalton.com/tags/sass/">Sass</a>
-        (2)
-      </li>
-    
-    </ul>
-  </div>
-
-</aside>
-      <footer class="l-footer" role="contentinfo">
-  <p>
-    &copy; 2014, <a href="http://twitter.com/philwalton">Philip Walton</a>. Built with <a href="https://github.com/mojombo/jekyll">Jekyll</a>
-  </p>
-</footer>
-    </div>
-    
-
-  
-
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-21292978-1']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-      // track clicks on outbound hyperlinks
-      (function() {
-
-        var links = document.getElementsByTagName("a")
-          , link
-          , i = 0
-
-        function isLink(el) {
-          return el.nodeName.toLowerCase() == "a" && el.href
-        }
-
-        function isExternalLink(el) {
-          return el.href.indexOf(location.host) < 0
-        }
-
-        function getLinkAncestor(el) {
-          if (isLink(el)) return el
-          while (el.parentNode && el.parentNode.nodeType == 1) {
-            if (isLink(el)) return el
-            el = el.parentNode
-          }
-        }
-
-        function logExternalClicks(event) {
-          var e = event || window.event
-            , target = e.target || e.srcElement
-            , link = getLinkAncestor(target)
-          if (link && isExternalLink(link)) {
-            _gaq.push(['_trackEvent', 'Outbound Link', link.href]);
-          }
-        }
-
-        // add target="_blank" to external links
-        while(link = links[i++]) {
-          if (link.target != "_blank" && isExternalLink(link)) {
-            link.target = "_blank"
-          }
-        }
-
-        // register logging on click events
-        if (document.addEventListener) {
-          document.addEventListener("click", logExternalClicks)
-        }
-        else if (document.attachEvent) {
-          document.attachEvent("onclick", logExternalClicks)
-        }
-
-      }())
-    </script>
-
-  
-
-
-    
-  <!--[if gte IE 9]><!-->
-  <script src="http://philipwalton.com/assets/javascripts/highlight.js"></script>
-  <script>hljs.initHighlightingOnLoad()</script>
-  <!--<![endif]-->
-
-    
-  <script>
-    // Don't load the widgets when the sidebar isn't visible
-    if (window.matchMedia && window.matchMedia("(min-width: 48em)").matches) {
-      !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-    }
-  </script>
-
-
-    
-  
-  <script>
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8><title>What No One Told You About Z-Index &mdash; Philip Walton</title><meta name=HandheldFriendly content=True><meta name=MobileOptimized content=320><meta name=viewport content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"><link href=http://philipwalton.com/assets/css/style.css rel=stylesheet><link href=http://feeds.feedburner.com/philipwalton rel=alternate type=application/atom+xml><meta name=description content="Thoughts on front-end development, architecture, and the future of the web."></head><body><header class=header role=banner><div class=l-container><div class=l-header-main><h1 class=header__title><a href=http://philipwalton.com/ rel=home>Philip Walton</a></h1><h2 class=header__description>On Web Development and Open-Source</h2></div><nav class=l-header-nav role=navigation><ul class=nav><li><a href=http://philipwalton.com/>Home</a></li><li><a class=is-selected href=http://philipwalton.com/articles/>Articles</a></li><li><a href=http://philipwalton.com/about/>About</a></li></ul></nav></div></header><div class=l-container><section class=l-content role=main><article role=article><header class=page-header><h1 class=page-header__title>What No One Told You About Z-Index</h1><ul class=article-meta><li><time datetime=2012-12-22T21:17:39-08:00>December 22, 2012</time></li><li><a href=http://philipwalton.com/tags/css/>CSS</a></li></ul></header><p>The problem with z-index is that very few people understand how it really works. It&#39;s not complicated, but it if you&#39;ve never taken the time to read its specification, there are almost certainly crucial aspects that you&#39;re completely unaware of.</p><p>Don&#39;t believe me? Well, see if you can solve this problem:</p><h2 id=the-problem>The Problem</h2><p>In the following HTML you have three <code>&lt;div&gt;</code> elements, and each <code>&lt;div&gt;</code> contains a single <code>&lt;span&gt;</code> element. Each <code>&lt;span&gt;</code> is given a background color &mdash; red, green, and blue respectively. Each <code>&lt;span&gt;</code> is also positioned absolutely near the top left of the document, slightly overlapping the other <code>&lt;span&gt;</code> elements so you can see which ones are stacked in front of which. The first <code>&lt;span&gt;</code> has a z-index value of <code>1</code>, while the other two do not have any z-index set.</p><p>Here&#39;s what the HTML and basic CSS look like. I&#39;ve also included a visual demo (via <a href=http://codepen.io>Codepen</a>) with the full CSS below:</p><pre class=highlight><code class=xml><span class=tag>&lt;<span class=title>div</span>&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"red"</span>&gt;</span>Red<span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"green"</span>&gt;</span>Green<span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"blue"</span>&gt;</span>Blue<span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span></code></pre><pre class=highlight><code class=css><span class=class>.red</span>, <span class=class>.green</span>, <span class=class>.blue</span> <span class=rules>{
+  <span class=rule><span class=attribute>position</span>:<span class=value> absolute</span></span>;
+<span class=rule>}</span></span>
+<span class=class>.red</span> <span class=rules>{
+  <span class=rule><span class=attribute>background</span>:<span class=value> red</span></span>;
+  <span class=rule><span class=attribute>z-index</span>:<span class=value> <span class=number>1</span></span></span>;
+<span class=rule>}</span></span>
+<span class=class>.green</span> <span class=rules>{
+  <span class=rule><span class=attribute>background</span>:<span class=value> green</span></span>;
+<span class=rule>}</span></span>
+<span class=class>.blue</span> <span class=rules>{
+  <span class=rule><span class=attribute>background</span>:<span class=value> blue</span></span>;
+<span class=rule>}</span></span></code></pre><div class=codepen-wrapper><pre class=codepen data-height=240 data-type=result data-href=ksBaI data-user=philipwalton><code></code></pre></div><p><strong>Here&#39;s the challenge:</strong> try to see if you can make the red <code>&lt;span&gt;</code> element stack behind the blue and green <code>&lt;span&gt;</code> elements without breaking any of the following rules:</p><ul><li>Do not alter the HTML markup in any way.</li><li>Do not add/change the z-index property of any element.</li><li>Do not add/change the position property of any element.</li></ul><p>To see if you can figure it out, click the <em>edit on Codepen</em> link above and play around with it for a bit. If you&#39;ve succeeded, it should look like the example below.</p><p><em>Warning: Don&#39;t click on the CSS tab of the example below or it will give away the answer.</em></p><div class=codepen-wrapper><pre class=codepen data-height=240 data-type=result data-href=dfCtb data-user=philipwalton data-safe=true><code></code></pre></div><h2 id=the-solution>The Solution</h2><p>The solution is to add an opacity value less than <code>1</code> to the first <code>&lt;div&gt;</code> (the parent of the red <code>&lt;span&gt;</code>). Here is the CSS that was added to the Codepen above:</p><pre class=highlight><code class=css><span class=tag>div</span><span class=pseudo>:first-child</span> <span class=rules>{
+  <span class=rule><span class=attribute>opacity</span>:<span class=value> .<span class=number>99</span></span></span>;
+<span class=rule>}</span></span></code></pre><p>If you&#39;re scratching your head right now in shock and disbelief that opacity would have any effect on which elements are stacked in front of which, welcome to the club. I was similarly shocked when I first stumbled upon this issue.</p><p>Hopefully the rest of this article will make things a little more clear.</p><h2 id=stacking-order>Stacking Order</h2><p>Z-index seems so simple: elements with a higher z-index are stacked in front of elements with a lower z-index, right? Well, actually, no. This is part of the problem with z-index. It appears so simple, so most developers don&#39;t take the time to read the rules.</p><p>Every element in an HTML document can be either in front of or behind every other element in the document. This is known as the stacking order. The rules to determine this order are pretty clearly defined in the spec, but as I&#39;ve already stated, they&#39;re not fully understood by most developers.</p><p>When the z-index and position properties aren&#39;t involved, the rules are pretty simple: basically, the stacking order is the same as the order of appearance in the HTML. (OK, it&#39;s actually a <a href=http://www.w3.org/TR/CSS2/zindex.html>little more complicated</a> than that, but as long as you&#39;re not using negative margins to overlap inline elements, you probably won&#39;t encounter the edge cases.)</p><p>When you introduce the position property into the mix, any positioned elements (and their children) are displayed in front of any non-positioned elements. (To say an element is &quot;positioned&quot; means that it has a position value other than <code>static</code>, e.g., <code>relative</code>, <code>absolute</code>, etc.)</p><p>Finally, when z-index is involved, things get a little trickier. At first it&#39;s natural to assume elements with higher z-index values are in front of elements with lower z-index values, and any element with a z-index is in front of any element without a z-index, but it&#39;s not that simple. First of all, z-index only works on positioned elements. If you try to set a z-index on an element with no position specified, it will do nothing. Secondly, z-index values can create stacking contexts, and now suddenly what seemed simple just got a lot more complicated.</p><h2 id=stacking-contexts>Stacking Contexts</h2><p>Groups of elements with a common parent that move forward or backward together in the stacking order make up what is known as a stacking context. A full understanding of stacking contexts is key to really grasping how z-index and the stacking order work.</p><p>Every stacking context has a single HTML element as its root element. When a new stacking context is formed on an element, that stacking context confines all of its child elements to a particular place in the stacking order. That means that if an element is contained in a stacking context at the bottom of the stacking order, there is no way to get it to appear in front of another element in a different stacking context that is higher in the stacking order, even with a z-index of a billion!</p><p>New stacking contexts can be formed on an element in one of three ways:</p><ul><li>When an element is the root element of a document (the <code>&lt;html&gt;</code> element)</li><li>When an element has a position value other than <code>static</code> and a z-index value other than <code>auto</code></li><li>When an element has an opacity value less than <code>1</code></li></ul><p>The first and second ways to form stacking context make a lot of sense and are generally understood by Web developers (even if they don&#39;t know what they&#39;re called).</p><p>The third way (opacity) is almost never mentioned outside of w3c specification documents.</p><p class=callout><strong>Update:</strong> In addition to opacity, several newer CSS properties also create stacking contexts. These include: <a href=http://www.w3.org/TR/css3-transforms/>transforms</a>, <a href=http://www.w3.org/TR/filter-effects/>filters</a>, <a href=http://www.w3.org/TR/css3-regions/>css-regions</a>, <a href=http://www.w3.org/TR/css3-page/>paged media</a>, and possibly others. As a general rule, it seems that if a CSS property requires rendering in an offscreen context, it must create a new stacking context.</p><h2 id=determining-an-element-s-position-in-the-stacking-order>Determining an Element&#39;s Position in the Stacking Order</h2><p>Actually determining the global stacking order for all elements on a page (including borders, backgrounds, text nodes, etc.) is extremely complicated and far beyond the scope of this article (again, I refer you to <a href=http://www.w3.org/TR/CSS2/zindex.html>the spec</a>).</p><p>But for most intents and purposes, a basic understanding of the order can go a long way and help keep CSS development predictable. So let&#39;s start by breaking the order down into individual stacking contexts.</p><h3 id=stacking-order-within-the-same-stacking-context>Stacking Order Within the Same Stacking Context</h3><p>Here are the basic rules to determine stacking order within a single stacking context (from back to front):</p><ol><li>The stacking context&#39;s root element</li><li>Positioned elements (and their children) with negative z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li><li>Non-positioned elements (ordered by appearance in the HTML)</li><li>Positioned elements (and their children) with a z-index value of <code>auto</code> (ordered by appearance in the HTML)</li><li>Positioned elements (and their children) with positive z-index values (higher values are stacked in front of lower values; elements with the same value are stacked according to appearance in the HTML)</li></ol><p><strong>Note:</strong> positioned elements with negative z-indexes are ordered first within a stacking context, which means they appear behind all other elements. Because of this, it becomes possible for an element to appear behind its own parent, which is normally not possible. This will only work if the element&#39;s parent is in the same stacking context and is not the root element of that stacking context. A great example of this is Nicolas Gallagher&#39;s <a href=http://nicolasgallagher.com/css-drop-shadows-without-images/demo/>CSS drop-shadows without images</a>.</p><h3 id=global-stacking-order>Global Stacking Order</h3><p>With a firm understanding of how/when new stacking contexts are formed as well as a grasp of the stacking order within a stacking context, figuring out where a particular element will appear in the global stacking order isn&#39;t so bad.</p><p>The key to avoid getting tripped up is being able to spot when new stacking contexts are formed. If you&#39;re setting a z-index of a billion on an element and it&#39;s not moving forward in the stacking order, take a look up its ancestor tree and see if any of its parents form stacking contexts. If they do, your z-index of a billion isn&#39;t going to do you any good.</p><h2 id=wrapping-up>Wrapping Up</h2><p>Getting back to the original problem, I&#39;ve recreated the HTML structure adding comments within each tag indicating its place in the stacking order. This order is assuming the original CSS.</p><pre class=highlight><code class=xml><span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 1 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"red"</span>&gt;</span><span class=comment>&lt;!-- 6 --&gt;</span><span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 2 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"green"</span>&gt;</span><span class=comment>&lt;!-- 4 --&gt;</span><span class=tag>&lt;<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 3 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"blue"</span>&gt;</span><span class=comment>&lt;!-- 5 --&gt;</span><span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span></code></pre><p>When we add the opacity rule to the first <code>&lt;div&gt;</code>, the stacking order changes like so:</p><pre class=highlight><code class=xml><span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 1 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"red"</span>&gt;</span><span class=comment>&lt;!-- 1.1 --&gt;</span><span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 2 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"green"</span>&gt;</span><span class=comment>&lt;!-- 4 --&gt;</span><span class=tag>&lt;<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
+<span class=tag>&lt;<span class=title>div</span>&gt;</span><span class=comment>&lt;!-- 3 --&gt;</span>
+  <span class=tag>&lt;<span class=title>span</span> <span class=attribute>class</span>=<span class=value>"blue"</span>&gt;</span><span class=comment>&lt;!-- 5 --&gt;</span><span class=tag>&lt;/<span class=title>span</span>&gt;</span>
+<span class=tag>&lt;/<span class=title>div</span>&gt;</span></code></pre><p><code>span.red</code> used to be <code>6</code> but it&#39;s changed to <code>1.1</code>. I&#39;ve used dot notation to show that a new stacking context was formed and <code>span.red</code> is now the first element within that new context.</p><p>Hopefully it&#39;s now a little more clear why the red box moved behind the other boxes. The original example contained only two stacking contexts, the root one and the one formed on <code>span.red</code>. When we added opacity to the parent element of <code>span.red</code> we formed a third stacking context and, as a result, the z-index value on <code>span.red</code> only applied within that new context. Because the first <code>&lt;div&gt;</code> (the one we applied opacity to) and its sibling elements do not have position or z-index values set, their stacking order is determined by their source order in the HTML, which means the first <code>&lt;div&gt;</code>, and all the elements contained within its stacking context, are rendered behind the second and third <code>&lt;div&gt;</code> elements.</p><h2 id=additional-resources>Additional Resources</h2><ul><li><a href=http://www.w3.org/TR/CSS2/zindex.html>Elaborate description of Stacking Contexts</a></li><li><a href=https://developer.mozilla.org/en-US/docs/CSS/Understanding_z-index/The_stacking_context>The stacking context</a></li><li><a href=http://coding.smashingmagazine.com/2009/09/15/the-z-index-css-property-a-comprehensive-look/>The Z-Index CSS Property: A Comprehensive Look</a></li></ul><script async src=http://codepen.io/assets/embed/ei.js></script><p class="callout callout--twitter">If you liked this article and think others should read it, please <a href="http://twitter.com/intent/tweet?text=What%20No%20One%20Told%20You%20About%20Z-Index&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fwhat-no-one-told-you-about-z-index%2F&amp;via=philwalton">share it on Twitter</a>.</p><div id=disqus_thread class=l-comments></div><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=http://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></section><aside class=l-widgets role=complementary><div class=widget><p>My name is Philip Walton. I'm an engineer at Google on the developer relations team and formerly, senior front-end software engineer at Appfolio. I'm passionate about open source software and the future of the Web. This blog is where I write about what I learn.</p><a href=https://twitter.com/philwalton class=twitter-follow-button data-lang=en>Follow Me</a></div><div class=widget><h3 class=widget__title>Popular Articles</h3><ul><li><a href=http://philipwalton.com/articles/what-no-one-told-you-about-z-index/>What No One Told You About Z-Index</a></li><li><a href=http://philipwalton.com/articles/decoupling-html-css-and-javascript/>Decoupling Your HTML, CSS, and JavaScript</a></li><li><a href=http://philipwalton.com/articles/introducing-html-inspector/>Introducing HTML Inspector</a></li><li><a href=http://philipwalton.com/articles/css-architecture/>CSS Architecture</a></li></ul></div><div class=widget><h3 class=widget__title>Topics</h3><ul><li><a href=http://philipwalton.com/tags/architecture/>Architecture</a> (3)</li><li><a href=http://philipwalton.com/tags/css/>CSS</a> (8)</li><li><a href=http://philipwalton.com/tags/html/>HTML</a> (4)</li><li><a href=http://philipwalton.com/tags/javascript/>JavaScript</a> (5)</li><li><a href=http://philipwalton.com/tags/oocss/>OOCSS</a> (3)</li><li><a href=http://philipwalton.com/tags/sass/>Sass</a> (2)</li></ul></div></aside><footer class=l-footer role=contentinfo><p>&copy; 2014, Philip Walton. </p></footer></div><script>var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21292978-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();</script><script>// Don't load the widgets when the sidebar isn't visible
+  if (window.matchMedia && window.matchMedia("(min-width: 48em)").matches) {
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  }</script><script>/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = "philipwalton"; // required: replace example with your forum shortname
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
@@ -445,9 +55,4 @@
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-  </script>
-  
-
-  </body>
-</html>
+    })();</script><script src=http://philipwalton.com/assets/javascript/track-external-clicks.js></script></body></html>
