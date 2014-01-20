@@ -4,13 +4,20 @@
   <title></title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2014-01-04T19:01:02-08:00</updated>
+  <updated>2014-01-20T14:14:52-08:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
     <email>philip@philipwalton.com</email>
   </author>
 
+  
+    <entry>
+      <title>How to Find Qualified Developers</title>
+      <link href="http://philipwalton.com/articles/how-to-find-qualified-developers/"/>
+      <updated>2014-01-20T13:51:26-08:00</updated>
+      <id>http://philipwalton.com/articles/how-to-find-qualified-developers/</id>
+    </entry>
   
     <entry>
       <title>Interviewing as a Front-End Engineer in San Francisco</title>
