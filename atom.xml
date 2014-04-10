@@ -4,13 +4,20 @@
   <title></title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2014-01-26T21:25:47-08:00</updated>
+  <updated>2014-04-09T23:01:24-07:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
     <email>philip@philipwalton.com</email>
   </author>
 
+  
+    <entry>
+      <title>Implementing Private and Protected Members in JavaScript</title>
+      <link href="http://philipwalton.com/articles/implementing-private-and-protected-members-in-javascript/"/>
+      <updated>2014-04-09T21:59:27-07:00</updated>
+      <id>http://philipwalton.com/articles/implementing-private-and-protected-members-in-javascript/</id>
+    </entry>
   
     <entry>
       <title>How to Find Qualified Developers</title>
