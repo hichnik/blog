@@ -4,13 +4,20 @@
   <title>Philip Walton</title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2014-04-20T16:16:57-07:00</updated>
+  <updated>2014-04-20T16:17:55-07:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
     <email>philip@philipwalton.com</email>
   </author>
 
+  
+    <entry>
+      <title>Stop Copying Social Code Snippets</title>
+      <link href="http://philipwalton.com/articles/stop-copying-social-code-snippets/"/>
+      <updated>2014-04-20T16:17:32-07:00</updated>
+      <id>http://philipwalton.com/articles/stop-copying-social-code-snippets/</id>
+    </entry>
   
     <entry>
       <title>Implementing Private and Protected Members in JavaScript</title>
