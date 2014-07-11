@@ -11,7 +11,6 @@ module.exports = function() {
   function replaceDefaultLayoutWithBlank(template) {
     if (template.layout) {
       template.layout = template.layout.clone();
-      template.layout.uuid = Math.random();
 
       if (path.basename(template.layout.filename, '.html') == 'default') {
         delete template.layout;
@@ -23,6 +22,7 @@ module.exports = function() {
 
   this.events.on('beforeRender', function() {
 
+    /*
     pages.forEach(function(p) {
 
       var template = p.template.clone();
@@ -33,6 +33,7 @@ module.exports = function() {
 
       var page = new Page(template, p.config);
       var filename = page.permalink.toString();
+
       filename = !path.extname(filename)
         ? filename + '_index.html'
         : path.dirname(filename) + '_' + path.basename(filename);
@@ -40,6 +41,26 @@ module.exports = function() {
       page.permalink = filename;
 
     });
+    */
+
+    pages.forEach(function(p) {
+
+      // Instead of cloning the template, just clone the page
+      // which should recursively clone the post, template, and layout
+      // heirarchy, etc.
+      var page = p.clone();
+      replaceDefaultLayoutWithBlank(page.template);
+
+      var filename = page.permalink.toString();
+
+      filename = !path.extname(filename)
+        ? filename + '_index.html'
+        : path.dirname(filename) + '_' + path.basename(filename);
+
+      page.permalink = new Permalink(filename);
+
+    });
+
 
   });
 
