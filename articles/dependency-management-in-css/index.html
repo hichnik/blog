@@ -7,7 +7,7 @@
 <link rel="subresource" src="//use.typekit.net/ayq0lpd.js"/>
 <link rel="subresource" src="//www.google-analytics.com/analytics.js"/>
 
-<title>CSS: Everything is Global and How to Deal With It &mdash; Philip Walton</title>
+<title>Dependency Management in CSS &mdash; Philip Walton</title>
 
 <!--[if lt IE 9]><script src="/assets/javascript/html5shiv.js"></script><![endif]-->
 
@@ -64,7 +64,7 @@ ga('send', 'pageview');
 <link href="/assets/css/style.css" rel="stylesheet">
 <link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="Philip Walton" type="application/atom+xml">
 
-<meta name="description" content="Everything in CSS is global. Every line you write has the potential to conflict with every">
+<meta name="description" content="Dependency management is a problem in CSS. The cascade considers both specificity and source order when">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <svg display="none">
@@ -128,17 +128,113 @@ ga('send', 'pageview');
 <article role="article" class="hentry">
 
   <header class="ContentHeader">
-    <h1 class="ContentHeader-title entry-title">CSS: Everything is Global and How to Deal With It</h1>
+    <h1 class="ContentHeader-title entry-title">Dependency Management in CSS</h1>
     <time class="ContentHeader-date published"
-        datetime="2013-03-25T20:21:57-07:00">
-      March 25, 2013
+        datetime="2014-01-30T21:06:39-08:00">
+      January 30, 2014
     </time>
   </header>
 
   <div class="entry-content">
-    <p>Everything in CSS is global. Every line you write has the potential to conflict with every other line. Because of this, CSS is often the hardest part of scaling any Web application or working on a development team.</p>
-<p>In my article published on the <a href="http://www.adobe.com/devnet/html5/articles/css-everything-is-global-and-how-to-deal-with-it.html">Adobe Developer Network</a>, I discuss some strategies for dealing with the global nature of CSS. I talk about finding the balance between paranoid over-protection and just asking for trouble. I also talk about some exciting things already making their way into the CSS spec that will provide real encapsulation in the future.</p>
-<p>I hope you find it useful, and as always I welcome your feedback.</p>
+    <p>Dependency management is a problem in CSS. The cascade considers both specificity and source order when determining rule precedence, so the order in which you write (or concatenate) you CSS is critically important.</p>
+<p>Consider the following visual elements: a button, a button row, an alert, and a modal dialog.</p>
+<p>The button is a normal button, style nicely. The button group is a containing element that, when used as the parent of a button, it gives each child button a right margin so that multiple consecutive buttons can be spaced out evenly.</p>
+<p>The alert is a block of text that stands out with a red, yellow, or green background for things like success, info, and error messages.</p>
+<p>Finally, the modal is a dialog that appears as its own “layer” in front of everything else on the page.</p>
+<p>These are all pretty common visual elements, and they (or variations of them) appear in pretty much every single CSS framework.</p>
+<p>When writing modular CSS, the goal is to make each component (or module or block or whatever you prefer to call it) completely independent from it’s context. In other words, a button should always look like a button, no matter where it appears in the HTML structure.</p>
+<p>The rational behind this is predictability. If you’re working on a large team, you want people to be able to use any component and not be surprised by how it ends up looking in their situations.</p>
+<p>The problem is that in many cases, you have to made a compromise between predictability and reusability. Let me illustrate this dilemma with an example:</p>
+<p>Given the modal and button row components I’ve described above, suppose you want your buttons to be right aligned and have a left margin (instead of the usual right margin) when appearing in a modal’s footer. So to accomplish this you write a rule like:</p>
+<pre class="highlight"><code class="css"><span class="class">.ButtonRow</span> <span class="class">.Button</span> <span class="rules">{
+  <span class="rule"><span class="attribute">margin-right</span>:<span class="value"> .<span class="number">5</span>em</span></span>;
+<span class="rule">}</span></span>
+<span class="class">.Modal</span> <span class="class">.ButtonRow</span> <span class="class">.Button</span> <span class="rules">{
+  <span class="rule"><span class="attribute">margin-right</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">margin-left</span>:<span class="value"> .<span class="number">5</span>em</span></span>;
+<span class="rule">}</span></span></code></pre><p>There’s nothing technically wrong with the above code, but it does break a lot fo the principles of modular.</p>
+<p>The <code>Button</code> component is now context dependent. It’s appearance depends on where it appears in the HTML (whether or not it’s a child of a element with the <code>.ButtonRow</code> class). And the <code>ButtonRow</code> component is now also context dependent, which means that there’s an added level of contextual dependency for the <code>Button</code> component when it’s used within modals.</p>
+<p>The upside of this approach is it allows the comonents to be smarter. They “just work” as long as they’re put in the right containers and the CSS is correctly coded for those containers.</p>
+<p>The downside of this approach is it quickly becomes very hard to know how a component is going to look when you’re writing your HTML, especially if the person writing the HTML is not the person who wrote the CSS.</p>
+<p>This is also a pretty trivial example. As soon as you start adding more levels of context dependency, it can quickly get out of hand.</p>
+<p>A different approach to the same problem would be to use component modifiers. Modifiers are something I highly recommend and are part of systems like OOCSS, BEM, and SMACSS. They help you avoid a lot of the context dependency issues here.</p>
+<p>This is what the above problem would look like with modifiers. Instead of you descendent selectors with .Modal and .ButtonGroup, you’d just you modifier classes:</p>
+<pre class="highlight"><code class="css"><span class="class">.Modal-footer</span> <span class="rules">{
+  <span class="rule"><span class="attribute">text-align</span>:<span class="value"> right</span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.Button</span> <span class="rules">{ <span class="rule">}</span></span>
+<span class="class">.Button--rtl</span> <span class="rules">{
+  <span class="rule"><span class="attribute">margin-left</span>:<span class="value"> .<span class="number">5</span>em</span></span>;
+<span class="rule">}</span></span></code></pre><p>Then the HTML would look something like this:</p>
+<pre class="highlight"><code class="xml"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"Modal"</span>&gt;</span>
+  <span class="comment">&lt;!-- some content goes here --&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"Modal-footer"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">a</span> <span class="attribute">class</span>=<span class="value">"Button Button--rtl"</span>&gt;</span>Cancel<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">a</span> <span class="attribute">class</span>=<span class="value">"Button Button--rtl"</span>&gt;</span>OK<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span></code></pre><p>As anyone who has used modifiers in the past knows, the trade off here is less coupled CSS modules, but more classes needed in the HTML. In most situations I’d strongly prefer this approach over descendant selectors.</p>
+<p>But there are some cases where the modifier approach is impractical.</p>
+<p>What if the contents of the modal were a form whose HTML lived in a template file somewhere, and that template was used in both modal and non-modal contexts? How do you handle that case?</p>
+<p>If you puristically stick to modifiers then at best you end up with a bunch of conditionals in your templates. At worse you end up with two separate templates for what is essentially the same form.</p>
+<p>Again, this is a pretty trivial example. As soon as you start introducing additional layout variants due to container size, device width, or other responsive considerations, you can quickly end up with too many combinations to manage with modifiers.</p>
+<p>So, as with many things in front-end development, sometimes it better to use one strategy, and sometimes it’s better to use another.</p>
+<p>At the end of the day, whatever strategy you pick, you goal should be to maximize the strengths of that method while minimizing its weaknesses.</p>
+<p>In the case of the context dependendent components, you should do everything you can to minimize unpredictability.</p>
+<h2 id="a-solution">A Solution</h2>
+<p>Part of the reason many people in the CSS community recommend modifiers over context dependency is due to the fact that with any sort of dependency, as it scales, you need a way to manage those dependencies.</p>
+<p>CSS doesn’t have a way to manage dependencies. Nor do any CSS preprocessors that I know of.</p>
+<p>The reason dependency management is needed is because if module A is going to reference module B, but the CSS file for module B hasn’t been included yet, module B’s later inclusion may override module A’s declaration. For example:</p>
+<pre class="highlight"><code class="css"><span class="comment">/* in modal.css */</span>
+<span class="class">.Modal-footer</span> <span class="class">.Button</span> <span class="rules">{
+  <span class="rule"><span class="attribute">margin-right</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">margin-left</span>:<span class="value"> <span class="number">0.5</span>em</span></span>;
+<span class="rule">}</span></span>
+
+<span class="comment">/* in button-row.css */</span>
+<span class="class">.ButtonRow</span> <span class="class">.Button</span> <span class="rules">{
+  <span class="rule"><span class="attribute">margin-right</span>:<span class="value"> <span class="number">0.5</span>em</span></span>;
+<span class="rule">}</span></span></code></pre><p>In the above example, the “button-row.css” file should have been included before the “modal.css” file. But if the person who wrote the “button-row.css” file didn’t know “modal.css” existed (much less the contents of it or the specificity of its rules) then he’s probably just going to add it to the end of the file list for the build system, and suddenly you have a bug.</p>
+<p>Messing up the order of how CSS files are concatenated together during the build step is a big problem. I’ve seen it happen many times. It shouldn’t be the responsibility of the person writing the new module to learn the entire system before contributing, it should be the responsibility of the build system to resolve these issues.</p>
+<p>A naive solution would be to add something like a require statement to the top of a file that depends on another file coming before it. The require statement would include that file if it hadn’t been included already.</p>
+<pre class="highlight"><code class="css"><span class="comment">/* in modal.css */</span>
+<span class="at_rule">@<span class="keyword">require</span> <span class="function">url(<span class="string">'components/button.css'</span>)</span></span>;
+<span class="at_rule">@<span class="keyword">require</span> <span class="function">url(<span class="string">'components/button-row.css'</span>)</span></span>;
+
+<span class="class">.Modal</span> <span class="rules">{ <span class="rule">}</span></span></code></pre><p>This solution is OK, but I think it could lead to an over-dependence on source order. The distinction is subtle, but rather than a module depending on some other file comming before it, I think a module should depend on some other module existing.</p>
+<p>Like I said, the difference is subtle, but we see this practice in other languages. An analogy would be using RequireJS or Browserify to structure your code verses simply concatenating them all together via a Grunt task. Both systems may end up producing the same result, but using a module system like AMD or CommonJS (via RequireJS or Browserify respectivly) forces you structure you code in a more maintainable way.</p>
+<p>CSS dependency management shouldn’t be any different.</p>
+<h2 id="the-strategy">The Strategy</h2>
+<p>If the file that defines Module A is going to reference Module B in any of its selectors, then it needs to declare Module B as a dependency.</p>
+<pre class="highlight"><code class="css"><span class="comment">/* in modal-a.css */</span>
+<span class="at_rule">@<span class="keyword">require</span> ModuleB</span>;
+
+<span class="class">.ModuleA</span> <span class="rules">{ <span class="rule">}</span></span>
+<span class="class">.ModuleA</span> <span class="class">.ModuleB</span> <span class="rules">{ <span class="rule">}</span></span></code></pre><p>Being explicit about this dependency at the top the file allows a build system to ensure the dependencies are loaded first, but it does two other much more important things as well:</p>
+<ul>
+<li>It informs other developers of the dependency</li>
+<li>It allows the build to fail when dependencies aren’t met, when dependencies are found but not declared, or when there are circular dependencies.</li>
+</ul>
+<p>If you’re willing to follow a few simple conventions, this can be a lifesaver.</p>
+<ol>
+<li>Every component must be in its own file and the name of that file should be the same as the component name.</li>
+<li>Every selector in the file must begin with the component class, a component class sub-element, or a component modifier, e.g., <code>.Modal</code>, <code>.Modal-footer</code>, <code>.Modal--wide</code> but not <code>.Foobar .Modal</code> or <code>.supports-draganddrop .Modal</code>.</li>
+<li>Components can only be context dependent on other components, never just arbitrary selectors, e.g. don’t do <code>#content article .Button { }</code></li>
+</ol>
+<p>TODO:</p>
+<ul>
+<li><p>What about modernizr classes or other global classes that get added to the <code>html</code> or <code>body</code> element? (Such as media query classes added via JavaScript.)</p>
+</li>
+<li><p>What about altering html elements like <code>&lt;a&gt;</code> or <code>&lt;ul&gt;</code>, seems like it might be nice to know whan that’s happening.</p>
+</li>
+</ul>
+<p>Directory Structure:</p>
+<p>/css
+— /base
+— /elements
+— /components
+— /utilities
+— /vendor</p>
 
   </div>
 
@@ -154,7 +250,7 @@ ga('send', 'pageview');
         If you liked this article and think others should read it, please
         <a data-social-network="Twitter"
            data-social-action="tweet"
-           href="http://twitter.com/intent/tweet?text=CSS%3A%20Everything%20is%20Global%20and%20How%20to%20Deal%20With%20It&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fcss-everything-is-global-and-how-to-deal-with-it%2F&amp;via=philwalton">share it on Twitter</a>.
+           href="http://twitter.com/intent/tweet?text=Dependency%20Management%20in%20CSS&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fdependency-management-in-css%2F&amp;via=philwalton">share it on Twitter</a>.
       </p>
     </div>
 

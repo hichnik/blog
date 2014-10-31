@@ -1,92 +1,158 @@
-<article role=article class=hentry><header class=ContentHeader><h1 class="ContentHeader-title entry-title">The Future of OOCSS: A Proposal</h1><time class="ContentHeader-date published" datetime=2013-01-17T11:02:16-08:00>January 17, 2013</time></header><div class=entry-content><p>In CSS we often code the same visual components over and over again &mdash; even within the same project. It’s embarrassing how many separate times in my career I’ve coded a two-column layout, or tabbed navigation, or a dropdown menu, or a popup (and the list goes on).</p><p>To deal with this problem <a href=http://stubbornella.org>Nicole Sullivan</a> created the <a href=https://github.com/stubbornella/oocss/wiki>Object Oriented CSS</a> (OOCSS) project. She suggests that instead of defining entire components in a single selector, developers should identify the visual patterns that appear over and over again and break them down into their reusable parts, defining each part as a separate class. Those classes can then be used and reused together in the HTML to build a variety of complex UI components.</p><p>OOCSS has been implemented on many large projects and is widely accepted as a sound approach to building websites. Yet, it always seems to be under attack from developers who don’t want a lot of classes in their HTML. To them it’s ugly and unmanageable.</p><p>If you’ve read anything I’ve written about OOCSS, you probably know where I stand on this issue, but where I stand isn’t important. Instead I want to acknowledge that both sides of the debate have valid concerns, and hopefully we can find a way to address those concerns instead of just taking sides.</p><p>What if CSS had object oriented functionality built in? What if there were a way to create a rich hierarchy of inherited CSS components that didn’t require listing each class in the HTML every single time?</p><p>There have been <a href="http://ianstormtaylor.com/oocss-plus-sass-is-the-best-way-to-css/">attempts to do this</a> with preprocessors, but I think we need to think bigger. Preprocessors can’t solve all the problems, and CSS should definitely be able to do this on its own.</p><p>Luckily with the recent speed of browser development, my wish might actually be possible.</p><h2 id=where-preprocessors-fall-short>Where Preprocessors Fall Short</h2><p>Sass’s <code>@extend</code> feature is often suggested as a solution to the OOCSS debate. With <code>@extend</code> you can define a simple selector and then within another selector declare that you’re extending it. Here’s an example:</p><pre class=highlight><code class=scss><span class=class>.button</span> {
-  <span class=attribute>background-color</span><span class=value>: gray;</span>
-  <span class=attribute>border</span><span class=value>: thin solid black;</span>
+
+<article role="article" class="hentry">
+
+  <header class="ContentHeader">
+    <h1 class="ContentHeader-title entry-title">The Future of OOCSS: A Proposal</h1>
+    <time class="ContentHeader-date published"
+        datetime="2013-01-17T11:02:16-08:00">
+      January 17, 2013
+    </time>
+  </header>
+
+  <div class="entry-content">
+    <p>In CSS we often code the same visual components over and over again &mdash; even within the same project. It’s embarrassing how many separate times in my career I’ve coded a two-column layout, or tabbed navigation, or a dropdown menu, or a popup (and the list goes on).</p>
+<p>To deal with this problem <a href="http://stubbornella.org">Nicole Sullivan</a> created the <a href="https://github.com/stubbornella/oocss/wiki">Object Oriented CSS</a> (OOCSS) project. She suggests that instead of defining entire components in a single selector, developers should identify the visual patterns that appear over and over again and break them down into their reusable parts, defining each part as a separate class. Those classes can then be used and reused together in the HTML to build a variety of complex UI components.</p>
+<p>OOCSS has been implemented on many large projects and is widely accepted as a sound approach to building websites. Yet, it always seems to be under attack from developers who don’t want a lot of classes in their HTML. To them it’s ugly and unmanageable.</p>
+<p>If you’ve read anything I’ve written about OOCSS, you probably know where I stand on this issue, but where I stand isn’t important. Instead I want to acknowledge that both sides of the debate have valid concerns, and hopefully we can find a way to address those concerns instead of just taking sides.</p>
+<p>What if CSS had object oriented functionality built in? What if there were a way to create a rich hierarchy of inherited CSS components that didn’t require listing each class in the HTML every single time?</p>
+<p>There have been <a href="http://ianstormtaylor.com/oocss-plus-sass-is-the-best-way-to-css/">attempts to do this</a> with preprocessors, but I think we need to think bigger. Preprocessors can’t solve all the problems, and CSS should definitely be able to do this on its own.</p>
+<p>Luckily with the recent speed of browser development, my wish might actually be possible.</p>
+<h2 id="where-preprocessors-fall-short">Where Preprocessors Fall Short</h2>
+<p>Sass’s <code>@extend</code> feature is often suggested as a solution to the OOCSS debate. With <code>@extend</code> you can define a simple selector and then within another selector declare that you’re extending it. Here’s an example:</p>
+<pre class="highlight"><code class="scss"><span class="class">.button</span> {
+  <span class="attribute">background-color</span><span class="value">: gray;</span>
+  <span class="attribute">border</span><span class="value">: thin solid black;</span>
 }
-<span class=class>.button-primary</span> {
-  <em><span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .button</span>;</span></em>
-  <span class=attribute>background-color</span><span class=value>: blue;</span>
-}</code></pre><p>That Sass compiles into the following CSS:</p><pre class=highlight><code class=css><span class=class>.button</span>, <span class=class>.button-primary</span> <span class=rules>{
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> gray</span></span>;
-  <span class=rule><span class=attribute>border</span>:<span class=value> thin solid black</span></span>;
-<span class=rule>}</span></span>
-<span class=class>.button-primary</span> <span class=rules>{
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> blue</span></span>;
-<span class=rule>}</span></span></code></pre><p>In classical object-oriented programming, when one class extends another, the extending class inherits all of the properties and methods of the base class.</p><p>If you look at the compiled CSS, you can see that Sass tries to accomplish this by adding <code>.button-primary</code> to the <code>.button</code> definition. In fact, Sass will look through the entire stylesheet and every selector that mentions <code>.button</code> will get <code>.button-primary</code> appended to the end, making sure it gets those properties as well.</p><p>In traditional OOCSS you put your base classes directly in the HTML, but with <code>@extend</code> you don’t have to. Sass makes sure that <code>.button-primary</code> gets all of the properties defined on <code>.button</code> so including the class <code>button</code> in the markup is unnecessary.</p><p>Hurray! Everyone’s happy, right?</p><p>While this is a very powerful tool and a great timesaver, it’s not the answer. There are several ways this solution falls short.</p><h3 id=it-doesn-t-work-inside-media-queries>It Doesn’t Work Inside Media Queries</h3><p>“Why doesn’t <code>@extend</code> work inside of media queries?” is probably the most common complaint I hear about Sass’s <code>@extend</code> feature.</p><p>The answer is pretty simple. It would be far too complicated to account for all possible situations. Consider the following example:</p><pre class=highlight><code class=scss><span class=at_rule>@<span class=keyword>media</span> (min-width:<span class=preprocessor> 10em</span>) {</span>
-  <span class=class>.button</span> {
-    <span class=attribute>background-color</span><span class=value>: gray;</span>
-    <span class=attribute>border</span><span class=value>: thin solid black;</span>
+<span class="class">.button-primary</span> {
+  <em><span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .button</span>;</span></em>
+  <span class="attribute">background-color</span><span class="value">: blue;</span>
+}</code></pre><p>That Sass compiles into the following CSS:</p>
+<pre class="highlight"><code class="css"><span class="class">.button</span>, <span class="class">.button-primary</span> <span class="rules">{
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> gray</span></span>;
+  <span class="rule"><span class="attribute">border</span>:<span class="value"> thin solid black</span></span>;
+<span class="rule">}</span></span>
+<span class="class">.button-primary</span> <span class="rules">{
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> blue</span></span>;
+<span class="rule">}</span></span></code></pre><p>In classical object-oriented programming, when one class extends another, the extending class inherits all of the properties and methods of the base class.</p>
+<p>If you look at the compiled CSS, you can see that Sass tries to accomplish this by adding <code>.button-primary</code> to the <code>.button</code> definition. In fact, Sass will look through the entire stylesheet and every selector that mentions <code>.button</code> will get <code>.button-primary</code> appended to the end, making sure it gets those properties as well.</p>
+<p>In traditional OOCSS you put your base classes directly in the HTML, but with <code>@extend</code> you don’t have to. Sass makes sure that <code>.button-primary</code> gets all of the properties defined on <code>.button</code> so including the class <code>button</code> in the markup is unnecessary.</p>
+<p>Hurray! Everyone’s happy, right?</p>
+<p>While this is a very powerful tool and a great timesaver, it’s not the answer. There are several ways this solution falls short.</p>
+<h3 id="it-doesn-t-work-inside-media-queries">It Doesn’t Work Inside Media Queries</h3>
+<p>“Why doesn’t <code>@extend</code> work inside of media queries?” is probably the most common complaint I hear about Sass’s <code>@extend</code> feature.</p>
+<p>The answer is pretty simple. It would be far too complicated to account for all possible situations. Consider the following example:</p>
+<pre class="highlight"><code class="scss"><span class="at_rule">@<span class="keyword">media</span> (min-width:<span class="preprocessor"> 10em</span>) {</span>
+  <span class="class">.button</span> {
+    <span class="attribute">background-color</span><span class="value">: gray;</span>
+    <span class="attribute">border</span><span class="value">: thin solid black;</span>
   }
 }
 
-<span class=at_rule>@<span class=keyword>media</span> (max-width:<span class=preprocessor> 20em</span>) {</span>
-  <span class=class>.button-primary</span> {
-    <span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .button</span>;</span>
-    <span class=attribute>background-color</span><span class=value>: blue;</span>
+<span class="at_rule">@<span class="keyword">media</span> (max-width:<span class="preprocessor"> 20em</span>) {</span>
+  <span class="class">.button-primary</span> {
+    <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .button</span>;</span>
+    <span class="attribute">background-color</span><span class="value">: blue;</span>
   }
-}</code></pre><p>The <code>.button</code> selector above is defined to look a certain way, but only when the page is wider than <code>10em</code>. At the same time, <code>.button-primary</code> is defined to look a certain way, but only when the page is narrower than <code>20em</code>. If <code>.button-primary</code> is expected to inherit the properties of <code>.button</code>, it should only do so when the page is between 10 and 20 ems wide. In order for Sass to implement this, it would have to parse the two media queries and create a brand new one that combined the two cases.</p><p>Sometimes this is possible, but often it’s not. And even in cases when it could be done, it would be extremely complicated and error prone.</p><h3 id=you-lose-the-inheritance-chain>You Lose the Inheritance Chain</h3><p>When you don’t put a component’s base class in the markup, you have no way of knowing what a particular class or element <em>is</em>. In traditional OOP, you can inspect an object to determine what classes it inherits from, but that’s not possible here.</p><p>Imagine you’ve created many different types of widgets that all <code>@extend</code> the <code>.widget</code> base class. Then, as a result of some user interaction, you need to temporarily disable all of them via JavaScript. If the <code>widget</code> class isn’t in the HTML it’s going to be very difficult!</p><pre class=highlight><code class=javascript><span class=comment>// This won't work!</span>
-document.querySelectorAll(<span class=string>".widget"</span>)</code></pre><p>Any native class inheritance in CSS must allow for dynamic inspection of the inheritance chain. Obviously a CSS preprocessor can’t solve this problem.</p><h3 id=it-can-t-account-for-specificity>It Can’t Account for Specificity</h3><p>Sass does its best to make all occurrences of a base class include the extending selector, but it’s not magic: it can’t account for developer error. Ultimately, Sass produces raw CSS, so the rules that govern CSS also apply to Sass.</p><p>Consider what happens when a selector tries to extend a selector with a higher specificity:</p><pre class=highlight><code class=scss><span class=comment>/* The Sass */</span>
-<span class=class>.button</span> {
-  <span class=attribute>border</span><span class=value>: thin solid black;</span>
-  <span class=attribute>background-color</span><span class=value>: gray;</span>
+}</code></pre><p>The <code>.button</code> selector above is defined to look a certain way, but only when the page is wider than <code>10em</code>. At the same time, <code>.button-primary</code> is defined to look a certain way, but only when the page is narrower than <code>20em</code>. If <code>.button-primary</code> is expected to inherit the properties of <code>.button</code>, it should only do so when the page is between 10 and 20 ems wide. In order for Sass to implement this, it would have to parse the two media queries and create a brand new one that combined the two cases.</p>
+<p>Sometimes this is possible, but often it’s not. And even in cases when it could be done, it would be extremely complicated and error prone.</p>
+<h3 id="you-lose-the-inheritance-chain">You Lose the Inheritance Chain</h3>
+<p>When you don’t put a component’s base class in the markup, you have no way of knowing what a particular class or element <em>is</em>. In traditional OOP, you can inspect an object to determine what classes it inherits from, but that’s not possible here.</p>
+<p>Imagine you’ve created many different types of widgets that all <code>@extend</code> the <code>.widget</code> base class. Then, as a result of some user interaction, you need to temporarily disable all of them via JavaScript. If the <code>widget</code> class isn’t in the HTML it’s going to be very difficult!</p>
+<pre class="highlight"><code class="javascript"><span class="comment">// This won't work!</span>
+document.querySelectorAll(<span class="string">".widget"</span>)</code></pre><p>Any native class inheritance in CSS must allow for dynamic inspection of the inheritance chain. Obviously a CSS preprocessor can’t solve this problem.</p>
+<h3 id="it-can-t-account-for-specificity">It Can’t Account for Specificity</h3>
+<p>Sass does its best to make all occurrences of a base class include the extending selector, but it’s not magic: it can’t account for developer error. Ultimately, Sass produces raw CSS, so the rules that govern CSS also apply to Sass.</p>
+<p>Consider what happens when a selector tries to extend a selector with a higher specificity:</p>
+<pre class="highlight"><code class="scss"><span class="comment">/* The Sass */</span>
+<span class="class">.button</span> {
+  <span class="attribute">border</span><span class="value">: thin solid black;</span>
+  <span class="attribute">background-color</span><span class="value">: gray;</span>
 }
-<span class=tag>a</span> {
-  <span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .button</span>;</span>
-  <span class=attribute>background-color</span><span class=value>: blue;</span>
-}</code></pre><pre class=highlight><code class=css><span class=comment>/* The CSS */</span>
-<span class=class>.button</span>, <span class=tag>a</span> <span class=rules>{
-  <span class=rule><span class=attribute>border</span>:<span class=value> thin solid black</span></span>;
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> gray</span></span>;
-<span class=rule>}</span></span>
-<span class=tag>a</span> <span class=rules>{
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> blue</span></span>;
-<span class=rule>}</span></span></code></pre><p>The above code tries to turn all links into buttons but with a background color of <code>blue</code>. However, this won’t work. The selector <code>.button</code> has a higher specificity than the selector <code>a</code> and even though Sass will properly append <code>a</code> to all <code>.button</code> declarations, the normal CSS cascade will prevent this from working like you’d expect.</p><p>Any native inheritance in CSS must account for specificity.</p><h3 id=it-can-t-account-for-source-order>It Can’t Account for Source Order</h3><p>Similar to the example above, the following code is valid Sass, but it won’t work as expected:</p><pre class=highlight><code class=scss><span class=comment>/* The Sass */</span>
-<span class=class>.button-extended</span> {
-  <span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .button</span>;</span>
-  <span class=attribute>background-color</span><span class=value>: blue
+<span class="tag">a</span> {
+  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .button</span>;</span>
+  <span class="attribute">background-color</span><span class="value">: blue;</span>
+}</code></pre><pre class="highlight"><code class="css"><span class="comment">/* The CSS */</span>
+<span class="class">.button</span>, <span class="tag">a</span> <span class="rules">{
+  <span class="rule"><span class="attribute">border</span>:<span class="value"> thin solid black</span></span>;
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> gray</span></span>;
+<span class="rule">}</span></span>
+<span class="tag">a</span> <span class="rules">{
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> blue</span></span>;
+<span class="rule">}</span></span></code></pre><p>The above code tries to turn all links into buttons but with a background color of <code>blue</code>. However, this won’t work. The selector <code>.button</code> has a higher specificity than the selector <code>a</code> and even though Sass will properly append <code>a</code> to all <code>.button</code> declarations, the normal CSS cascade will prevent this from working like you’d expect.</p>
+<p>Any native inheritance in CSS must account for specificity.</p>
+<h3 id="it-can-t-account-for-source-order">It Can’t Account for Source Order</h3>
+<p>Similar to the example above, the following code is valid Sass, but it won’t work as expected:</p>
+<pre class="highlight"><code class="scss"><span class="comment">/* The Sass */</span>
+<span class="class">.button-extended</span> {
+  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .button</span>;</span>
+  <span class="attribute">background-color</span><span class="value">: blue
 }
 .button {
-  border: <span class=number>1</span>px solid black;</span>
-  <span class=attribute>background-color</span><span class=value>: gray;</span>
-}</code></pre><pre class=highlight><code class=css><span class=comment>/* The CSS */</span>
-<span class=class>.button-extended</span> <span class=rules>{
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> blue</span></span>;
-<span class=rule>}</span></span>
-<span class=class>.button</span>, <span class=class>.button-extended</span> <span class=rules>{
-  <span class=rule><span class=attribute>border</span>:<span class=value> <span class=number>1</span>px solid black</span></span>;
-  <span class=rule><span class=attribute>background-color</span>:<span class=value> gray</span></span>;
-<span class=rule>}</span></span></code></pre><p>Source order also matters in CSS, so if you <code>@extend</code> components before you define them, you’ll end up overriding yourself. The cascade strikes again!</p><p>Any native inheritance in CSS must account for source order.</p><h3 id=it-doesn-t-handle-descendants-or-nested-elements-well>It Doesn’t Handle Descendants or Nested Elements Well</h3><p>Consider again the <code>.button</code> class. This time we want to extend it so that when it’s inside modal dialogs it’s a nice glossy button. To do so we use <a href=http://modernizr.com>Modernizr</a> to feature detect box shadow support. The selector looks like this:</p><pre class=highlight><code class=scss><span class=class>.button</span> { }
-<span class=class>.boxshadow</span> <span class=class>.modal</span> <span class=class>.button-fancy</span> {
-  <span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .button</span>;</span>
-  <span class=comment>/* more styles here */</span>
-}</code></pre><p>Then, later in the stylesheet we decide that we want to make <code>.button</code> instances look different when they’re in the footer, so we add this line:</p><pre class=highlight><code class=css><span class=id>#footer</span> <span class=class>.button</span> <span class=rules>{ <span class=rule>}</span></span></code></pre><p>Now, Sass is very confused. Since there are any number of ways all of this could occur, it must include selector combinations for all of them. To the developer, it’s obvious that the Modernizr class <code>.boxshadow</code> should always be first in the selector sequence. It’s also obvious that a button that’s inside a modal dialog will never also be in the footer, but Sass can’t know that. It must account for all the possibilities:</p><pre class=highlight><code class=css><span class=id>#footer</span> <span class=class>.boxshadow</span> <span class=class>.modal</span> <span class=class>.button-fancy</span>,
-<span class=class>.boxshadow</span> <span class=id>#footer</span> <span class=class>.modal</span> <span class=class>.button-fancy</span>,
-<span class=class>.boxshadow</span> <span class=class>.modal</span> <span class=id>#footer</span> <span class=class>.button-fancy</span> <span class=rules>{ <span class=rule>}</span></span></code></pre><p>And that’s just two selectors. Obviously, things become quite a bit more complicated as the numbers get higher.</p><p>The same is true when the class you extend can be nested inside itself. In OOCSS, the classic example of this is <a href="http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/">the media object</a> which can be nested multiple levels deep without breaking.</p><p>Nestable components aren’t an uncommon requirement in CSS, but when you try to <code>@extend</code> components that you’re also nesting in selectors, you get some pretty ugly generated CSS. Consider the following:</p><pre class=highlight><code class=scss><span class=comment>/* The Sass */</span>
-<span class=class>.media</span> {
-  <span class=comment>/* media styles */</span>
+  border: <span class="number">1</span>px solid black;</span>
+  <span class="attribute">background-color</span><span class="value">: gray;</span>
+}</code></pre><pre class="highlight"><code class="css"><span class="comment">/* The CSS */</span>
+<span class="class">.button-extended</span> <span class="rules">{
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> blue</span></span>;
+<span class="rule">}</span></span>
+<span class="class">.button</span>, <span class="class">.button-extended</span> <span class="rules">{
+  <span class="rule"><span class="attribute">border</span>:<span class="value"> <span class="number">1</span>px solid black</span></span>;
+  <span class="rule"><span class="attribute">background-color</span>:<span class="value"> gray</span></span>;
+<span class="rule">}</span></span></code></pre><p>Source order also matters in CSS, so if you <code>@extend</code> components before you define them, you’ll end up overriding yourself. The cascade strikes again!</p>
+<p>Any native inheritance in CSS must account for source order.</p>
+<h3 id="it-doesn-t-handle-descendants-or-nested-elements-well">It Doesn’t Handle Descendants or Nested Elements Well</h3>
+<p>Consider again the <code>.button</code> class. This time we want to extend it so that when it’s inside modal dialogs it’s a nice glossy button. To do so we use <a href="http://modernizr.com">Modernizr</a> to feature detect box shadow support. The selector looks like this:</p>
+<pre class="highlight"><code class="scss"><span class="class">.button</span> { }
+<span class="class">.boxshadow</span> <span class="class">.modal</span> <span class="class">.button-fancy</span> {
+  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .button</span>;</span>
+  <span class="comment">/* more styles here */</span>
+}</code></pre><p>Then, later in the stylesheet we decide that we want to make <code>.button</code> instances look different when they’re in the footer, so we add this line:</p>
+<pre class="highlight"><code class="css"><span class="id">#footer</span> <span class="class">.button</span> <span class="rules">{ <span class="rule">}</span></span></code></pre><p>Now, Sass is very confused. Since there are any number of ways all of this could occur, it must include selector combinations for all of them. To the developer, it’s obvious that the Modernizr class <code>.boxshadow</code> should always be first in the selector sequence. It’s also obvious that a button that’s inside a modal dialog will never also be in the footer, but Sass can’t know that. It must account for all the possibilities:</p>
+<pre class="highlight"><code class="css"><span class="id">#footer</span> <span class="class">.boxshadow</span> <span class="class">.modal</span> <span class="class">.button-fancy</span>,
+<span class="class">.boxshadow</span> <span class="id">#footer</span> <span class="class">.modal</span> <span class="class">.button-fancy</span>,
+<span class="class">.boxshadow</span> <span class="class">.modal</span> <span class="id">#footer</span> <span class="class">.button-fancy</span> <span class="rules">{ <span class="rule">}</span></span></code></pre><p>And that’s just two selectors. Obviously, things become quite a bit more complicated as the numbers get higher.</p>
+<p>The same is true when the class you extend can be nested inside itself. In OOCSS, the classic example of this is <a href="http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/">the media object</a> which can be nested multiple levels deep without breaking.</p>
+<p>Nestable components aren’t an uncommon requirement in CSS, but when you try to <code>@extend</code> components that you’re also nesting in selectors, you get some pretty ugly generated CSS. Consider the following:</p>
+<pre class="highlight"><code class="scss"><span class="comment">/* The Sass */</span>
+<span class="class">.media</span> {
+  <span class="comment">/* media styles */</span>
 }
-<span class=class>.media</span> <span class=class>.media</span> <span class=class>.media</span> {
-  <span class=comment>/* styles when nested */</span>
+<span class="class">.media</span> <span class="class">.media</span> <span class="class">.media</span> {
+  <span class="comment">/* styles when nested */</span>
 }
-<span class=id>#submit</span> {
-  <span class=at_rule>@<span class=keyword>extend</span><span class=preprocessor> .media</span>;</span>
-  <span class=comment>/* #submit styles */</span>
-}</code></pre><pre class=highlight><code class=css><span class=comment>/* The CSS */</span>
-<span class=class>.media</span>, <span class=id>#submit</span> <span class=rules>{
-  <span class=comment>/* media styles */</span>
-<span class=rule>}</span></span>
-<span class=class>.media</span> <span class=class>.media</span> <span class=class>.media</span>,
-<span class=id>#submit</span> <span class=class>.media</span> <span class=class>.media</span>,
-<span class=class>.media</span> <span class=id>#submit</span> <span class=class>.media</span>,
-<span class=id>#submit</span> <span class=id>#submit</span> <span class=class>.media</span>,
-<span class=class>.media</span> <span class=class>.media</span> <span class=id>#submit</span>,
-<span class=id>#submit</span> <span class=class>.media</span> <span class=id>#submit</span>,
-<span class=class>.media</span> <span class=id>#submit</span> <span class=id>#submit</span>,
-<span class=id>#submit</span> <span class=id>#submit</span> <span class=id>#submit</span> <span class=rules>{
-  <span class=comment>/* styles when nested */</span>
-<span class=rule>}</span></span>
-<span class=id>#submit</span> <span class=rules>{
-  <span class=comment>/* #submit styles */</span>
-<span class=rule>}</span></span></code></pre><p>Again, the problem is that Sass must account for every possible permutation of these elements in the HTML.</p><p>A native solution to class inheritance wouldn’t have this problem because it wouldn’t have to generate CSS selectors at compile time; rather, the browser would do the matching at runtime.</p><h2 id=the-proposal>The Proposal</h2><p>CSS should have its own way to define class inheritance. It should be simple and declarative, and as simply CSS, it would be natively supported by the browser and therefore accessible to JavaScript APIs.</p><p>Any native solution should meet some minimum requirements, and I think the above list of <code>@extend</code>‘s shortcomings is a good place to start.</p><ul><li>It should work no matter where it’s defined (including media queries)</li><li>It should expose the inheritance chain to JavaScript APIs</li><li>It should not be affected by specificity or source order</li><li>It should easily handle descendants, nested elements, and other complex selectors</li><li>It should allow for multiple levels of inheritance</li></ul><p>My proposal for native OOCSS introduces two new features: a new kind of simple selector and a new <code>@</code> rule.</p><p>The new simple selector would be called the “abstract class selector”. It would be a class name prepended with a percent sign (<code>%</code>) similar to Sass’s placeholder syntax. The abstract class selector would match any element that inherits or extends from it. The new <code>@</code> rule would be used to declare the inheritance. Here is an example:</p><pre class=highlight><code>%button {
+<span class="id">#submit</span> {
+  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .media</span>;</span>
+  <span class="comment">/* #submit styles */</span>
+}</code></pre><pre class="highlight"><code class="css"><span class="comment">/* The CSS */</span>
+<span class="class">.media</span>, <span class="id">#submit</span> <span class="rules">{
+  <span class="comment">/* media styles */</span>
+<span class="rule">}</span></span>
+<span class="class">.media</span> <span class="class">.media</span> <span class="class">.media</span>,
+<span class="id">#submit</span> <span class="class">.media</span> <span class="class">.media</span>,
+<span class="class">.media</span> <span class="id">#submit</span> <span class="class">.media</span>,
+<span class="id">#submit</span> <span class="id">#submit</span> <span class="class">.media</span>,
+<span class="class">.media</span> <span class="class">.media</span> <span class="id">#submit</span>,
+<span class="id">#submit</span> <span class="class">.media</span> <span class="id">#submit</span>,
+<span class="class">.media</span> <span class="id">#submit</span> <span class="id">#submit</span>,
+<span class="id">#submit</span> <span class="id">#submit</span> <span class="id">#submit</span> <span class="rules">{
+  <span class="comment">/* styles when nested */</span>
+<span class="rule">}</span></span>
+<span class="id">#submit</span> <span class="rules">{
+  <span class="comment">/* #submit styles */</span>
+<span class="rule">}</span></span></code></pre><p>Again, the problem is that Sass must account for every possible permutation of these elements in the HTML.</p>
+<p>A native solution to class inheritance wouldn’t have this problem because it wouldn’t have to generate CSS selectors at compile time; rather, the browser would do the matching at runtime.</p>
+<h2 id="the-proposal">The Proposal</h2>
+<p>CSS should have its own way to define class inheritance. It should be simple and declarative, and as simply CSS, it would be natively supported by the browser and therefore accessible to JavaScript APIs.</p>
+<p>Any native solution should meet some minimum requirements, and I think the above list of <code>@extend</code>‘s shortcomings is a good place to start.</p>
+<ul>
+<li>It should work no matter where it’s defined (including media queries)</li>
+<li>It should expose the inheritance chain to JavaScript APIs</li>
+<li>It should not be affected by specificity or source order</li>
+<li>It should easily handle descendants, nested elements, and other complex selectors</li>
+<li>It should allow for multiple levels of inheritance</li>
+</ul>
+<p>My proposal for native OOCSS introduces two new features: a new kind of simple selector and a new <code>@</code> rule.</p>
+<p>The new simple selector would be called the “abstract class selector”. It would be a class name prepended with a percent sign (<code>%</code>) similar to Sass’s placeholder syntax. The abstract class selector would match any element that inherits or extends from it. The new <code>@</code> rule would be used to declare the inheritance. Here is an example:</p>
+<pre class="highlight"><code>%button {
   background-color: gray;
   border: thin solid black;
 }
@@ -95,24 +161,41 @@ document.querySelectorAll(<span class=string>".widget"</span>)</code></pre><p>An
 }
 
 @extend .button &lt; %button;
-@extend .button-primary &lt; %button;</code></pre><p>This code defines how any class that extends from button would look. It then declares that the class selectors <code>.button</code> and <code>.button-primary</code> both inherit from <code>%button</code>.</p><h3 id=using-abstract-class-selectors>Using Abstract Class Selectors</h3><p>Since an abstract class selector would be just another simple selector, it could be used in any way a simple selector can be used today. You could apply pseudo classes to it, have it nested between other selectors, or put it in media queries.</p><p>All of the following would be valid uses of the abstract class selector:</p><pre class=highlight><code>%foo { }
+@extend .button-primary &lt; %button;</code></pre><p>This code defines how any class that extends from button would look. It then declares that the class selectors <code>.button</code> and <code>.button-primary</code> both inherit from <code>%button</code>.</p>
+<h3 id="using-abstract-class-selectors">Using Abstract Class Selectors</h3>
+<p>Since an abstract class selector would be just another simple selector, it could be used in any way a simple selector can be used today. You could apply pseudo classes to it, have it nested between other selectors, or put it in media queries.</p>
+<p>All of the following would be valid uses of the abstract class selector:</p>
+<pre class="highlight"><code>%foo { }
 %foo %bar { }
 %baz:first-of-type { }
 #sidebar %foo { }
 a:not(%button) { }
 @media (max-width: 30em) {
   %foo { }
-}</code></pre><h3 id=the-inheritance-chain>The Inheritance Chain</h3><p>How you write the markup would remain unchanged. You wouldn’t put an abstract class on an HTML element because JavaScript APIs could leverage the abstract class selector. Here’s an example:</p><pre class=highlight><code class=xml><span class=tag>&lt;<span class=title>button</span> <span class=attribute>class</span>=<span class=value>"button"</span>&gt;</span>Click Me<span class=tag>&lt;/<span class=title>button</span>&gt;</span>
-<span class=tag>&lt;<span class=title>a</span> <span class=attribute>href</span>=<span class=value>"#"</span> <span class=attribute>class</span>=<span class=value>"button-primary"</span>&gt;</span>No, Click Me<span class=tag>&lt;/<span class=title>a</span>&gt;</span></code></pre><p>These elements could be targeted via JavaScript like so:</p><pre class=highlight><code class=javascript><span class=comment>// Matches both elements above</span>
-document.querySelectorAll(<span class=string>"%button"</span>);</code></pre><p>There could also be additional methods added to the DOM API to make determining inheritance easier. Here are a few suggestions, but I’d anticipate many more:</p><pre class=highlight><code class=javascript><span class=comment>// we currently get the class list this way</span>
+}</code></pre><h3 id="the-inheritance-chain">The Inheritance Chain</h3>
+<p>How you write the markup would remain unchanged. You wouldn’t put an abstract class on an HTML element because JavaScript APIs could leverage the abstract class selector. Here’s an example:</p>
+<pre class="highlight"><code class="xml"><span class="tag">&lt;<span class="title">button</span> <span class="attribute">class</span>=<span class="value">"button"</span>&gt;</span>Click Me<span class="tag">&lt;/<span class="title">button</span>&gt;</span>
+<span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"#"</span> <span class="attribute">class</span>=<span class="value">"button-primary"</span>&gt;</span>No, Click Me<span class="tag">&lt;/<span class="title">a</span>&gt;</span></code></pre><p>These elements could be targeted via JavaScript like so:</p>
+<pre class="highlight"><code class="javascript"><span class="comment">// Matches both elements above</span>
+document.querySelectorAll(<span class="string">"%button"</span>);</code></pre><p>There could also be additional methods added to the DOM API to make determining inheritance easier. Here are a few suggestions, but I’d anticipate many more:</p>
+<pre class="highlight"><code class="javascript"><span class="comment">// we currently get the class list this way</span>
 element.classList;
 
-<span class=comment>// we could get the inheritance chain this way</span>
+<span class="comment">// we could get the inheritance chain this way</span>
 element.abstractClassList;
 
-<span class=comment>// And we could detect type like so</span>
-element.matchesSelector(<span class=string>"%base-class"</span>);</code></pre><h3 id=the-specificity-value-of-an-abstract-class-selector>The Specificity Value of an Abstract Class Selector</h3><p>The abstract class selector would have a specificity less than a class selector but greater than a type selector (a single tag). This would allow for all normally defined class selectors to override all abstract class selectors, which solves both the source order and specificity issues at the same time.</p><p>All other rules of specificity would apply normally, including the use of <code>!important</code> to override a property value in a class selector the same way a class selector can currently override a property value in an id selector.</p><h3 id=multiple-levels-of-inheritance>Multiple Levels of Inheritance</h3><p>Abstract class selectors should be able to extend other abstract class selectors as well. This could allow for a very rich component hierarchy:</p><pre class=highlight><code>@extend %widget &lt; %base-widget;
-@extend .my-widget &lt; %widget;</code></pre><p>For <code>@extend</code> declarations, the object on the left can be either a class selector or an abstract class selector, but the object on the right must be an abstract class selector. Non-abstract classes should never be able to extend other non-abstract classes or we’d end up with the same problems we already have with specificity and source order in Sass.</p><h2 id=a-simple-example-building-a-grid>A Simple Example: Building a Grid</h2><p>To demonstrate how abstract class selectors could be used in a real project, let’s build a simple grid system. Grid systems are quite useful but often come under fire for the presentational nature of their class names. With the help of abstract class selectors, this problem can be solved.</p><p>Here is the CSS for the skeleton grid system:</p><pre class=highlight><code>/* define a clearfix abstract class */
+<span class="comment">// And we could detect type like so</span>
+element.matchesSelector(<span class="string">"%base-class"</span>);</code></pre><h3 id="the-specificity-value-of-an-abstract-class-selector">The Specificity Value of an Abstract Class Selector</h3>
+<p>The abstract class selector would have a specificity less than a class selector but greater than a type selector (a single tag). This would allow for all normally defined class selectors to override all abstract class selectors, which solves both the source order and specificity issues at the same time.</p>
+<p>All other rules of specificity would apply normally, including the use of <code>!important</code> to override a property value in a class selector the same way a class selector can currently override a property value in an id selector.</p>
+<h3 id="multiple-levels-of-inheritance">Multiple Levels of Inheritance</h3>
+<p>Abstract class selectors should be able to extend other abstract class selectors as well. This could allow for a very rich component hierarchy:</p>
+<pre class="highlight"><code>@extend %widget &lt; %base-widget;
+@extend .my-widget &lt; %widget;</code></pre><p>For <code>@extend</code> declarations, the object on the left can be either a class selector or an abstract class selector, but the object on the right must be an abstract class selector. Non-abstract classes should never be able to extend other non-abstract classes or we’d end up with the same problems we already have with specificity and source order in Sass.</p>
+<h2 id="a-simple-example-building-a-grid">A Simple Example: Building a Grid</h2>
+<p>To demonstrate how abstract class selectors could be used in a real project, let’s build a simple grid system. Grid systems are quite useful but often come under fire for the presentational nature of their class names. With the help of abstract class selectors, this problem can be solved.</p>
+<p>Here is the CSS for the skeleton grid system:</p>
+<pre class="highlight"><code>/* define a clearfix abstract class */
 %clearfix {
   /* clearfix implementation */
 }
@@ -142,13 +225,15 @@ element.matchesSelector(<span class=string>"%base-class"</span>);</code></pre><h
 @extend %grid-cell-1-4 &lt; %grid-cell;
 %grid-cell-1-4 {
   width: calc(25% - 2em);
-}</code></pre><p>Now that we have our base grid system, we can extend from it to build a basic site layout. Let’s build a site with a header, footer, and content area with three columns, the center column being half the width and the left and right columns each being a quarter.</p><pre class=highlight><code class=xml><span class=tag>&lt;<span class=title>header</span>&gt;</span>...<span class=tag>&lt;/<span class=title>header</span>&gt;</span>
-<span class=tag>&lt;<span class=title>div</span> <span class=attribute>class</span>=<span class=value>"main"</span>&gt;</span>
-  <span class=tag>&lt;<span class=title>nav</span> <span class=attribute>class</span>=<span class=value>"menu"</span>&gt;</span>...<span class=tag>&lt;/<span class=title>nav</span>&gt;</span>
-  <span class=tag>&lt;<span class=title>article</span> <span class=attribute>class</span>=<span class=value>"content"</span>&gt;</span>...<span class=tag>&lt;/<span class=title>article</span>&gt;</span>
-  <span class=tag>&lt;<span class=title>aside</span> <span class=attribute>class</span>=<span class=value>"promotional"</span>&gt;</span>...<span class=tag>&lt;/<span class=title>aside</span>&gt;</span>
-<span class=tag>&lt;/<span class=title>div</span>&gt;</span>
-<span class=tag>&lt;<span class=title>footer</span>&gt;</span>...<span class=tag>&lt;/<span class=title>footer</span>&gt;</span></code></pre><p>We can easily use our base grid to style the above markup by simply extending a few of the abstract classes.</p><pre class=highlight><code>@extend .main &lt; %grid-row;
+}</code></pre><p>Now that we have our base grid system, we can extend from it to build a basic site layout. Let’s build a site with a header, footer, and content area with three columns, the center column being half the width and the left and right columns each being a quarter.</p>
+<pre class="highlight"><code class="xml"><span class="tag">&lt;<span class="title">header</span>&gt;</span>...<span class="tag">&lt;/<span class="title">header</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"main"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">nav</span> <span class="attribute">class</span>=<span class="value">"menu"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">nav</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">article</span> <span class="attribute">class</span>=<span class="value">"content"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">article</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">aside</span> <span class="attribute">class</span>=<span class="value">"promotional"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">aside</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;<span class="title">footer</span>&gt;</span>...<span class="tag">&lt;/<span class="title">footer</span>&gt;</span></code></pre><p>We can easily use our base grid to style the above markup by simply extending a few of the abstract classes.</p>
+<pre class="highlight"><code>@extend .main &lt; %grid-row;
 @extend .menu &lt; %grid-col-1-4;
 @extend .content &lt; %grid-col-1-2;
 @extend .promotional &lt; %grid-col-1-4;
@@ -161,7 +246,8 @@ element.matchesSelector(<span class=string>"%base-class"</span>);</code></pre><h
 }
 .promotional {
   /* promotional styles */
-}</code></pre><p>If we want our grid system to be responsive, we can use a media query to make each cell full width when the screen is smaller than <code>30em</code>. Notice that we’re only modifying the abstract class selectors in this media query (which the <code>.menu</code>, <code>.content</code>, and <code>.promotional</code> class selectors will automatically inherit).</p><pre class=highlight><code>@media (max-width: 30em) {
+}</code></pre><p>If we want our grid system to be responsive, we can use a media query to make each cell full width when the screen is smaller than <code>30em</code>. Notice that we’re only modifying the abstract class selectors in this media query (which the <code>.menu</code>, <code>.content</code>, and <code>.promotional</code> class selectors will automatically inherit).</p>
+<pre class="highlight"><code>@media (max-width: 30em) {
   %grid-row {
     margin-left: 0;
   }
@@ -170,5 +256,36 @@ element.matchesSelector(<span class=string>"%base-class"</span>);</code></pre><h
     width: auto;
     margin-left: 0;
   }
-}</code></pre><p>Lastly, if we wanted to make the columns sortable with some jQuery plugin, we could easily target them the same way in JavaScript:</p><pre class=highlight><code class=javascript><span class=comment>// select all elements that inherit from %grid-cell</span>
-$(<span class=string>"%grid-cell"</span>).sortable();</code></pre><h2 id=summary>Summary</h2><p>Hopefully this article has helped show just how powerful native class inheritance in CSS could be. Obviously, this is just my opinion and one possible implementation. I’m very interested to hear feedback from others who have also struggled with these problems.</p><p>I think we as a community should be pushing the boundaries of our core technologies. Tools help bridge the gaps, but native support is the future.</p><h2 id=additional-resources>Additional Resources</h2><ul><li><a href=https://github.com/stubbornella/oocss/wiki>OOCSS</a></li><li><a href=http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#extend>Sass’s @extend feature</a></li><li><a href=http://www.w3.org/TR/CSS21/cascade.html#specificity>CSS Specificity</a></li></ul></div><footer class=entry-unrelated><div class=Share><span class=Share-figure><svg viewbox="0 0 39 32"><use xlink:href=#icon-twitter-bird></use></svg></span><p class=Share-pitch>If you liked this article and think others should read it, please <a data-social-network=Twitter data-social-action=tweet href="http://twitter.com/intent/tweet?text=The%20Future%20of%20OOCSS%3A%20A%20Proposal&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fthe-future-of-oocss-a-proposal%2F&amp;via=philwalton">share it on Twitter</a>.</p></div></footer></article>
+}</code></pre><p>Lastly, if we wanted to make the columns sortable with some jQuery plugin, we could easily target them the same way in JavaScript:</p>
+<pre class="highlight"><code class="javascript"><span class="comment">// select all elements that inherit from %grid-cell</span>
+$(<span class="string">"%grid-cell"</span>).sortable();</code></pre><h2 id="summary">Summary</h2>
+<p>Hopefully this article has helped show just how powerful native class inheritance in CSS could be. Obviously, this is just my opinion and one possible implementation. I’m very interested to hear feedback from others who have also struggled with these problems.</p>
+<p>I think we as a community should be pushing the boundaries of our core technologies. Tools help bridge the gaps, but native support is the future.</p>
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://github.com/stubbornella/oocss/wiki">OOCSS</a></li>
+<li><a href="http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#extend">Sass’s @extend feature</a></li>
+<li><a href="http://www.w3.org/TR/CSS21/cascade.html#specificity">CSS Specificity</a></li>
+</ul>
+
+  </div>
+
+  <footer class="entry-unrelated">
+
+    <div class="Share">
+      <span class="Share-figure">
+        <svg viewBox="0 0 39 32">
+          <use xlink:href="#icon-twitter-bird"></use>
+        </svg>
+      </span>
+      <p class="Share-pitch">
+        If you liked this article and think others should read it, please
+        <a data-social-network="Twitter"
+           data-social-action="tweet"
+           href="http://twitter.com/intent/tweet?text=The%20Future%20of%20OOCSS%3A%20A%20Proposal&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fthe-future-of-oocss-a-proposal%2F&amp;via=philwalton">share it on Twitter</a>.
+      </p>
+    </div>
+
+  </footer>
+
+</article>
