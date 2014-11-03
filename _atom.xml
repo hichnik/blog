@@ -4,7 +4,7 @@
   <title>Philip Walton</title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2014-10-30T22:30:06-07:00</updated>
+  <updated>2014-11-03T08:46:32-08:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
@@ -34,24 +34,10 @@
     </entry>
   
     <entry>
-      <title>Dependency Management in CSS</title>
-      <link href="http://philipwalton.com/articles/dependency-management-in-css/"/>
-      <updated>2014-01-30T21:06:39-08:00</updated>
-      <id>http://philipwalton.com/articles/dependency-management-in-css/</id>
-    </entry>
-  
-    <entry>
       <title>How to Find Qualified Developers</title>
       <link href="http://philipwalton.com/articles/how-to-find-qualified-developers/"/>
       <updated>2014-01-20T13:51:26-08:00</updated>
       <id>http://philipwalton.com/articles/how-to-find-qualified-developers/</id>
-    </entry>
-  
-    <entry>
-      <title>Music, Web Browesrs, and the Well-Tempered Clavier</title>
-      <link href="http://philipwalton.com/articles/music-web-browsers-and-the-well-tempered-clavier/"/>
-      <updated>2014-01-07T23:36:19-08:00</updated>
-      <id>http://philipwalton.com/articles/music-web-browsers-and-the-well-tempered-clavier/</id>
     </entry>
   
     <entry>

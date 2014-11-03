@@ -1,840 +1,130 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-<link rel="subresource" src="//use.typekit.net/ayq0lpd.js"/>
-<link rel="subresource" src="//www.google-analytics.com/analytics.js"/>
-
-<title>Implementing Private and Protected Members in JavaScript &mdash; Philip Walton</title>
-
-<!--[if lt IE 9]><script src="/assets/javascript/html5shiv.js"></script><![endif]-->
-
-<!-- Put typekit in the head for the fastest possible download. -->
-<script src="//use.typekit.net/ayq0lpd.js"></script>
-
-<script>
-ga = function() { ga.q.push(arguments); };
-ga.q = []; ga.l = 1 * new Date();
-
-// Create the GA tracker before doing any logging.
-ga('create', 'UA-21292978-1', 'auto');
-
-
-
-  // In non-production mode, simply log GA hits to the console.
-  ga(function(tracker) {
-    tracker.set('sendHitTask', function() {
-      // Throw to stop subsequent tasks.
-      throw 'Abort tracking in non-production environments.'
-    });
-  });
-
-
-
-// Initialize typekit and track how frequently it fails.
-try {
-  Typekit.load();
-}
-catch(err) {
-  ga('send', 'exception', {
-    exDescription: err.stack || err.message,
-    exFatal: false
-  });
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><link rel=subresource src="//use.typekit.net/ayq0lpd.js"><link rel=subresource src="//www.google-analytics.com/analytics.js"><title>Implementing Private and Protected Members in JavaScript &mdash; Philip Walton</title><!--[if lt IE 9]><script src="/assets/javascript/html5shiv.js"></script><![endif]--><script src=//use.typekit.net/ayq0lpd.js></script><script>ga=function(){ga.q.push(arguments)},ga.q=[],ga.l=1*new Date,ga("create","UA-21292978-1","auto");try{Typekit.load()}catch(err){ga("send","exception",{exDescription:err.stack||err.message,exFatal:!1})}window.onerror=function(e,a,r,n){var t=e+" (line: "+r+", url: "+a+", col: "+n+")";ga("send","exception",{exDescription:"window.onerror: "+t,exFatal:!1})},ga("send","pageview");</script><link href=/assets/css/style.css rel=stylesheet><link href=http://feeds.feedburner.com/philipwalton rel=alternate title="Philip Walton" type=application/atom+xml><meta name=description content="Privacy has been a complicated issue throughout JavaScript’s history. While it’s always been possible to meet"><meta name=viewport content="width=device-width,initial-scale=1"><svg display=none><defs><path id=icon-twitter-bird d="M34.7 5c1.7-1 2.8-2.5 3.4-4.4-1.6 0.9-3.3 1.6-5 2-1.6-1.7-3.6-2.6-5.8-2.6-2.2 0-4.2 0.7-5.7 2.3-1.6 1.6-2.3 3.4-2.3 5.8 0 0.6 0.1 1.2 0.2 1.8-6.9-0.4-12.6-3.2-16.9-8.5-0.7 1.2-1.1 2.7-1.1 4.1 0 3 1.2 5.2 3.6 6.8-1.2 0-2.5-0.4-3.6-1v0.1c0 2 0.6 3.7 1.8 5.2 1.2 1.5 2.7 2.5 4.6 2.8-0.6 0.1-1.2 0.2-2.1 0.2-0.4 0-0.9 0-1.5-0.1 0.5 1.5 1.4 2.8 2.8 3.8 1.4 1 3 1.5 4.7 1.6-3.1 2.5-6.4 3.7-10 3.7-0.5 0-1.1 0-2-0.1 3.7 2.2 7.8 3.4 12.4 3.4 3.6 0 6.8-0.7 9.8-2.1 3-1.4 5.4-3.2 7.3-5.4 1.8-2.2 3.3-4.7 4.3-7.4s1.6-5.4 1.6-8.1v-1c1.4-1 2.7-2.5 3.9-4.2-1.6 0.6-3.2 1.1-4.7 1.2z"></path><path id=icon-rss d="M16 0q6.6 0 11.3 4.7t4.7 11.3q0 6.6-4.7 11.3t-11.3 4.7-11.3-4.7-4.7-11.3 4.7-11.3 11.3-4.7zM10.7 24q1.1 0 1.9-0.8t0.8-1.9-0.8-1.9-1.9-0.8-1.9 0.8-0.8 1.9 0.8 1.9 1.9 0.8zM16.7 24h3.3q0-5-3.5-8.5t-8.5-3.5v3.3q3.6 0 6.1 2.5t2.5 6.1zM22.7 24h3.3q0-3.7-1.4-7t-3.8-5.7-5.7-3.8-7-1.4v3.3q6.1 0 10.4 4.3t4.3 10.4z"></path><path id=icon-twitter d="M16 0q6.6 0 11.3 4.7t4.7 11.3-4.7 11.3-11.3 4.7-11.3-4.7-4.7-11.3 4.7-11.3 11.3-4.7zM25.7 12.5q1.2-0.9 2.3-2.3-1.3 0.6-2.6 0.7 1.4-0.8 2-2.5-1.4 0.8-2.9 1.1-1.3-1.4-3.3-1.4-1.9 0-3.2 1.3t-1.3 3.2q0 0.6 0.1 1-5.7-0.3-9.4-4.8-0.6 1.1-0.6 2.3 0 2.4 2 3.8-1 0-2-0.6v0q0 1.6 1 2.9t2.6 1.6q-0.5 0.1-1.2 0.1-0.3 0-0.9-0.1 0.4 1.4 1.6 2.2t2.6 0.9q-2.6 2.1-5.6 2.1-0.4 0-1.1-0.1 3.1 2 7 2 3 0 5.5-1.2t4.1-3.1 2.4-4.1 0.9-4.6v-0.6z"></path><path id=icon-github d="M16 0q6.59 0 11.3 4.7t4.7 11.3q0 5.52-3.39 9.85t-8.61 5.67v-4.18q0-2.89-1.67-4.18 3.37-0.52 5.52-2.41t2.15-4.74q0-2.52-1.85-4.59 0.67-3.07-0.15-4.74-2.04 0.19-4.63 1.78-1.78-0.44-3.37-0.44t-3.37 0.44q-2.59-1.59-4.63-1.78-0.85 1.78-0.15 4.74-1.85 2.07-1.85 4.59 0 2.85 2.15 4.74t5.52 2.41q-0.85 0.63-1.3 1.82-0.67 0-1.37-0.13t-1.28-0.35-1.11-0.5-0.96-0.56-0.72-0.52-0.48-0.39l-0.15-0.15q-0.26-0.26-0.52-0.07-0.3 0.19-0.22 0.52 0.7 1.37 1.19 2 1.93 2.48 5.26 3.48v3.22q-5.22-1.33-8.61-5.67t-3.39-9.85q0-6.63 4.68-11.31t11.32-4.68z"></path></defs></svg></head><body class=Site><div class=Site-header><header class=Header><a class=Header-info href="/" title=Home><h1 class=Header-title>Philip Walton</h1><p class=Header-tagline>Engineer at Google</p></a> <a class=Header-photo href="/" title=Home></a><div class=Header-social><nav class=SocialNav><a class="SocialNav-icon SocialNav-icon--twitter" href=https://twitter.com/philwalton title=Twitter><svg viewbox="0 0 32 32"><use xlink:href=#icon-twitter></use></svg></a> <a class="SocialNav-icon SocialNav-icon--github" href=https://github.com/philipwalton title=Github><svg viewbox="0 0 32 32"><use xlink:href=#icon-github></use></svg></a> <a class="SocialNav-icon SocialNav-icon--rss" href=http://feeds.feedburner.com/philipwalton title=RSS><svg viewbox="0 0 32 32"><use xlink:href=#icon-rss></use></svg></a></nav></div><div class=Header-nav><nav class=MainNav><a href="/" title=Home>Home</a> <a href="/articles/" title=Articles>Articles</a> <a href="/about/" title=About>About</a></nav></div></header></div><div class=Site-contentContainer><main class=Site-content><article role=article class=hentry><header class=ContentHeader><h1 class="ContentHeader-title entry-title">Implementing Private and Protected Members in JavaScript</h1><time class="ContentHeader-date published" datetime=2014-04-09T20:59:27-07:00>April 9, 2014</time></header><div class=entry-content><p>Privacy has been a complicated issue throughout JavaScript’s history.</p><p>While it’s always been possible to meet even the most stringent privacy needs (the myriad of compile-to-js languages proves this), the extraneous ceremony required to really do it right is often too much of a turn-off for most developers &mdash; especially to those coming from other languages where privacy is built in.</p><p>In JavaScript we like to prefix our private members with an underscore to let other developers know not to touch them. In fact, many of the more popular JavaScript style guides (<a href=https://github.com/airbnb/javascript#naming-conventions>airbnb</a>, <a href=http://dojotoolkit.org/community/styleGuide#Naming_Conventions>Dojo</a>, <a href=http://aloha-editor.org/guides/style_guide.html#code-conventions>aloha</a>) recommend this. But unless you have a way to enforce such a convention, it can never really be trusted.</p><p>Thought leaders in the JavaScript community have long warned against fake privacy. <a href=http://javascript.crockford.com/code.html#names>Douglas Crockford</a> has this to say on the subject:</p><blockquote><p>Do not use _ (underbar) as the first character of a name. It is sometimes used to indicate privacy, but it does not actually provide privacy. If privacy is important, use the forms that provide private members. Avoid conventions that demonstrate a lack of competence.</p></blockquote><p>Despite the warnings, a quick search on Github will show that this advice isn’t being taken seriously. Developers don’t like to jump through hoops, even if it’s for their own good.</p><p>In my opinion, the only way we’re really going to solve this problem is if we take the hoops away, or at least minimize them. In this article I present some ideas to do both.</p><h2 id=privacy-in-javascript-today>Privacy in JavaScript Today</h2><p>In JavaScript it’s really easy to make variables and functions private. Unfortunately, it’s not possible to make properties of objects private.</p><p>This can be a real problem in situations where you need to manage the state of an instance (or in JavaScript terms, manage properties on <code>this</code>). No private properties means that any code with access to your instance can alter its state in any way it wants.</p><p>Here’s an example of how I see most JavaScript code written today:</p><pre class=highlight><code class=javascript><span class=function><span class=keyword>function</span> <span class=title>Car</span><span class=params>()</span> {</span>
+  <span class=keyword>this</span>._mileage = <span class=number>0</span>;
 }
 
-
-// Track uncaught errors via Google Analytics.
-window.onerror = function(message, url, line, col) {
-  var desc = message + ' (line: ' + line + ', url: ' + url + ', col: '
-      + col + ')';
-  ga('send', 'exception', {
-    exDescription: 'window.onerror: ' + desc,
-    exFatal: false
-  });
-};
-
-
-// Note, tasks must be set before sending the first hit
-ga('send', 'pageview');
-</script>
-
-
-<link href="/assets/css/style.css" rel="stylesheet">
-<link href="http://feeds.feedburner.com/philipwalton" rel="alternate" title="Philip Walton" type="application/atom+xml">
-
-<meta name="description" content="Privacy has been a complicated issue throughout JavaScript’s history. While it’s always been possible to meet">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<svg display="none">
-  <defs>
-    <path id="icon-twitter-bird" d="M34.7 5c1.7-1 2.8-2.5 3.4-4.4-1.6 0.9-3.3 1.6-5 2-1.6-1.7-3.6-2.6-5.8-2.6-2.2 0-4.2 0.7-5.7 2.3-1.6 1.6-2.3 3.4-2.3 5.8 0 0.6 0.1 1.2 0.2 1.8-6.9-0.4-12.6-3.2-16.9-8.5-0.7 1.2-1.1 2.7-1.1 4.1 0 3 1.2 5.2 3.6 6.8-1.2 0-2.5-0.4-3.6-1v0.1c0 2 0.6 3.7 1.8 5.2 1.2 1.5 2.7 2.5 4.6 2.8-0.6 0.1-1.2 0.2-2.1 0.2-0.4 0-0.9 0-1.5-0.1 0.5 1.5 1.4 2.8 2.8 3.8 1.4 1 3 1.5 4.7 1.6-3.1 2.5-6.4 3.7-10 3.7-0.5 0-1.1 0-2-0.1 3.7 2.2 7.8 3.4 12.4 3.4 3.6 0 6.8-0.7 9.8-2.1 3-1.4 5.4-3.2 7.3-5.4 1.8-2.2 3.3-4.7 4.3-7.4s1.6-5.4 1.6-8.1v-1c1.4-1 2.7-2.5 3.9-4.2-1.6 0.6-3.2 1.1-4.7 1.2z"></path>
-    <path id="icon-rss" d="M16 0q6.6 0 11.3 4.7t4.7 11.3q0 6.6-4.7 11.3t-11.3 4.7-11.3-4.7-4.7-11.3 4.7-11.3 11.3-4.7zM10.7 24q1.1 0 1.9-0.8t0.8-1.9-0.8-1.9-1.9-0.8-1.9 0.8-0.8 1.9 0.8 1.9 1.9 0.8zM16.7 24h3.3q0-5-3.5-8.5t-8.5-3.5v3.3q3.6 0 6.1 2.5t2.5 6.1zM22.7 24h3.3q0-3.7-1.4-7t-3.8-5.7-5.7-3.8-7-1.4v3.3q6.1 0 10.4 4.3t4.3 10.4z"></path>
-    <path id="icon-twitter" d="M16 0q6.6 0 11.3 4.7t4.7 11.3-4.7 11.3-11.3 4.7-11.3-4.7-4.7-11.3 4.7-11.3 11.3-4.7zM25.7 12.5q1.2-0.9 2.3-2.3-1.3 0.6-2.6 0.7 1.4-0.8 2-2.5-1.4 0.8-2.9 1.1-1.3-1.4-3.3-1.4-1.9 0-3.2 1.3t-1.3 3.2q0 0.6 0.1 1-5.7-0.3-9.4-4.8-0.6 1.1-0.6 2.3 0 2.4 2 3.8-1 0-2-0.6v0q0 1.6 1 2.9t2.6 1.6q-0.5 0.1-1.2 0.1-0.3 0-0.9-0.1 0.4 1.4 1.6 2.2t2.6 0.9q-2.6 2.1-5.6 2.1-0.4 0-1.1-0.1 3.1 2 7 2 3 0 5.5-1.2t4.1-3.1 2.4-4.1 0.9-4.6v-0.6z"></path>
-    <path id="icon-github" d="M16 0q6.59 0 11.3 4.7t4.7 11.3q0 5.52-3.39 9.85t-8.61 5.67v-4.18q0-2.89-1.67-4.18 3.37-0.52 5.52-2.41t2.15-4.74q0-2.52-1.85-4.59 0.67-3.07-0.15-4.74-2.04 0.19-4.63 1.78-1.78-0.44-3.37-0.44t-3.37 0.44q-2.59-1.59-4.63-1.78-0.85 1.78-0.15 4.74-1.85 2.07-1.85 4.59 0 2.85 2.15 4.74t5.52 2.41q-0.85 0.63-1.3 1.82-0.67 0-1.37-0.13t-1.28-0.35-1.11-0.5-0.96-0.56-0.72-0.52-0.48-0.39l-0.15-0.15q-0.26-0.26-0.52-0.07-0.3 0.19-0.22 0.52 0.7 1.37 1.19 2 1.93 2.48 5.26 3.48v3.22q-5.22-1.33-8.61-5.67t-3.39-9.85q0-6.63 4.68-11.31t11.32-4.68z"></path>
-  </defs>
-</svg>
-
-
-  </head>
-  <body class="Site">
-
-    <div class="Site-header">
-      <header class="Header">
-        <a class="Header-info" href="/" title="Home">
-          <h1 class="Header-title">Philip Walton</h1>
-          <p class="Header-tagline">Engineer at Google</p>
-        </a>
-        <a class="Header-photo" href="/" title="Home"></a>
-        <div class="Header-social">
-          <nav class="SocialNav">
-  <a class="SocialNav-icon SocialNav-icon--twitter"
-     href="https://twitter.com/philwalton"
-     title="Twitter">
-    <svg viewBox="0 0 32 32">
-      <use xlink:href="#icon-twitter"></use>
-    </svg>
-  </a>
-  <a class="SocialNav-icon SocialNav-icon--github"
-     href="https://github.com/philipwalton"
-     title="Github">
-    <svg viewBox="0 0 32 32">
-      <use xlink:href="#icon-github"></use>
-    </svg>
-  </a>
-  <a class="SocialNav-icon SocialNav-icon--rss"
-     href="http://feeds.feedburner.com/philipwalton"
-     title="RSS">
-    <svg viewBox="0 0 32 32">
-      <use xlink:href="#icon-rss"></use>
-    </svg>
-  </a>
-</nav>
-        </div>
-        <div class="Header-nav">
-          <nav class="MainNav">
-  <a href="/" title="Home">Home</a>
-  <a href="/articles/" title="Articles">Articles</a>
-  <a href="/about/" title="About">About</a>
-</nav>
-        </div>
-      </header>
-    </div>
-
-    <div class="Site-contentContainer">
-      <main class="Site-content">
-        
-<article role="article" class="hentry">
-
-  <header class="ContentHeader">
-    <h1 class="ContentHeader-title entry-title">Implementing Private and Protected Members in JavaScript</h1>
-    <time class="ContentHeader-date published"
-        datetime="2014-04-09T20:59:27-07:00">
-      April 9, 2014
-    </time>
-  </header>
-
-  <div class="entry-content">
-    <p>Privacy has been a complicated issue throughout JavaScript’s history.</p>
-<p>While it’s always been possible to meet even the most stringent privacy needs (the myriad of compile-to-js languages proves this), the extraneous ceremony required to really do it right is often too much of a turn-off for most developers &mdash; especially to those coming from other languages where privacy is built in.</p>
-<p>In JavaScript we like to prefix our private members with an underscore to let other developers know not to touch them. In fact, many of the more popular JavaScript style guides (<a href="https://github.com/airbnb/javascript#naming-conventions">airbnb</a>, <a href="http://dojotoolkit.org/community/styleGuide#Naming_Conventions">Dojo</a>, <a href="http://aloha-editor.org/guides/style_guide.html#code-conventions">aloha</a>) recommend this. But unless you have a way to enforce such a convention, it can never really be trusted.</p>
-<p>Thought leaders in the JavaScript community have long warned against fake privacy. <a href="http://javascript.crockford.com/code.html#names">Douglas Crockford</a> has this to say on the subject:</p>
-<blockquote>
-<p>Do not use _ (underbar) as the first character of a name. It is sometimes used to indicate privacy, but it does not actually provide privacy. If privacy is important, use the forms that provide private members. Avoid conventions that demonstrate a lack of competence.</p>
-</blockquote>
-<p>Despite the warnings, a quick search on Github will show that this advice isn’t being taken seriously. Developers don’t like to jump through hoops, even if it’s for their own good.</p>
-<p>In my opinion, the only way we’re really going to solve this problem is if we take the hoops away, or at least minimize them. In this article I present some ideas to do both.</p>
-<h2 id="privacy-in-javascript-today">Privacy in JavaScript Today</h2>
-<p>In JavaScript it’s really easy to make variables and functions private. Unfortunately, it’s not possible to make properties of objects private.</p>
-<p>This can be a real problem in situations where you need to manage the state of an instance (or in JavaScript terms, manage properties on <code>this</code>). No private properties means that any code with access to your instance can alter its state in any way it wants.</p>
-<p>Here’s an example of how I see most JavaScript code written today:</p>
-<pre class="highlight"><code class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">Car</span><span class="params">()</span> {</span>
-  <span class="keyword">this</span>._mileage = <span class="number">0</span>;
-}
-
-Car.prototype.drive = <span class="function"><span class="keyword">function</span><span class="params">(miles)</span> {</span>
-  <span class="keyword">if</span> (<span class="keyword">typeof</span> miles == <span class="string">'number'</span> &amp;&amp; miles &gt; <span class="number">0</span>) {
-    <span class="keyword">this</span>._mileage += miles;
-  } <span class="keyword">else</span> {
-    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'drive only accepts positive numbers'</span>);
+Car.prototype.drive = <span class=function><span class=keyword>function</span><span class=params>(miles)</span> {</span>
+  <span class=keyword>if</span> (<span class=keyword>typeof</span> miles == <span class=string>'number'</span> &amp;&amp; miles &gt; <span class=number>0</span>) {
+    <span class=keyword>this</span>._mileage += miles;
+  } <span class=keyword>else</span> {
+    <span class=keyword>throw</span> <span class=keyword>new</span> Error(<span class=string>'drive only accepts positive numbers'</span>);
   }
 };
 
-Car.prototype.readMileage = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-  <span class="keyword">return</span> <span class="keyword">this</span>._mileage;
-};</code></pre><p>This is a pretty basic car class with a single private member and two accessor methods. As you can see, the <code>drive</code> method takes a number and increments the mileage property of the car instance. And like any good method, it checks to make sure the input is valid before applying it, otherwise you could end up with bad data.</p>
-<p>The problem is this check doesn’t actually protect against bad data since anyone with access to the instance could manually change the <code>_mileage</code> property later.</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> honda = <span class="keyword">new</span> Car();
-honda._mileage = <span class="string">'pwned'</span>;</code></pre><p>So how can we protect against bad data if properties cannot be private? How can we ensure that the state of our instances are safe from outside tampering?</p>
-<h3 id="a-step-closer">A Step Closer</h3>
-<p>It’s true that properties cannot be made private, but setting properties on an instance isn’t the only way to manage its state. There could be another object that is uniquely linked to the instance that is responsible for storing its state. And this second object actually <em>could</em> be private.</p>
-<p>Here’s an example of how that might look:</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> Car = (<span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+Car.prototype.readMileage = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+  <span class=keyword>return</span> <span class=keyword>this</span>._mileage;
+};</code></pre><p>This is a pretty basic car class with a single private member and two accessor methods. As you can see, the <code>drive</code> method takes a number and increments the mileage property of the car instance. And like any good method, it checks to make sure the input is valid before applying it, otherwise you could end up with bad data.</p><p>The problem is this check doesn’t actually protect against bad data since anyone with access to the instance could manually change the <code>_mileage</code> property later.</p><pre class=highlight><code class=javascript><span class=keyword>var</span> honda = <span class=keyword>new</span> Car();
+honda._mileage = <span class=string>'pwned'</span>;</code></pre><p>So how can we protect against bad data if properties cannot be private? How can we ensure that the state of our instances are safe from outside tampering?</p><h3 id=a-step-closer>A Step Closer</h3><p>It’s true that properties cannot be made private, but setting properties on an instance isn’t the only way to manage its state. There could be another object that is uniquely linked to the instance that is responsible for storing its state. And this second object actually <em>could</em> be private.</p><p>Here’s an example of how that might look:</p><pre class=highlight><code class=javascript><span class=keyword>var</span> Car = (<span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
 
-  <span class="comment">// Create a store to hold the private objects.</span>
-  <span class="keyword">var</span> privateStore = {};
-  <span class="keyword">var</span> uid = <span class="number">0</span>;
+  <span class=comment>// Create a store to hold the private objects.</span>
+  <span class=keyword>var</span> privateStore = {};
+  <span class=keyword>var</span> uid = <span class=number>0</span>;
 
-  <span class="function"><span class="keyword">function</span> <span class="title">Car</span><span class="params">(mileage)</span> {</span>
-    <span class="comment">// Create an object to manage this instance's state and</span>
-    <span class="comment">// use a unique ID to reference it in the private store.</span>
-    privateStore[<span class="keyword">this</span>.id = uid++] = {};
-    <span class="comment">// Store private stuff in the private store</span>
-    <span class="comment">// instead of on `this`.</span>
-    privateStore[<span class="keyword">this</span>.id].mileage = mileage || <span class="number">0</span>;
+  <span class=function><span class=keyword>function</span> <span class=title>Car</span><span class=params>(mileage)</span> {</span>
+    <span class=comment>// Create an object to manage this instance's state and</span>
+    <span class=comment>// use a unique ID to reference it in the private store.</span>
+    privateStore[<span class=keyword>this</span>.id = uid++] = {};
+    <span class=comment>// Store private stuff in the private store</span>
+    <span class=comment>// instead of on `this`.</span>
+    privateStore[<span class=keyword>this</span>.id].mileage = mileage || <span class=number>0</span>;
   }
 
-  Car.prototype.drive = <span class="function"><span class="keyword">function</span><span class="params">(miles)</span> {</span>
-    <span class="keyword">if</span> (<span class="keyword">typeof</span> miles == <span class="string">'number'</span> &amp;&amp; miles &gt; <span class="number">0</span>)
-      privateStore[<span class="keyword">this</span>.id].mileage += miles;
-    <span class="keyword">else</span>
-      <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'drive can only accept positive numbers'</span>);
+  Car.prototype.drive = <span class=function><span class=keyword>function</span><span class=params>(miles)</span> {</span>
+    <span class=keyword>if</span> (<span class=keyword>typeof</span> miles == <span class=string>'number'</span> &amp;&amp; miles &gt; <span class=number>0</span>)
+      privateStore[<span class=keyword>this</span>.id].mileage += miles;
+    <span class=keyword>else</span>
+      <span class=keyword>throw</span> <span class=keyword>new</span> Error(<span class=string>'drive can only accept positive numbers'</span>);
   };
 
-  Car.prototype.readMileage = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-    <span class="keyword">return</span> privateStore[<span class="keyword">this</span>.id].mileage;
+  Car.prototype.readMileage = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+    <span class=keyword>return</span> privateStore[<span class=keyword>this</span>.id].mileage;
   };
 
-  <span class="keyword">return</span> Car;
-}());</code></pre><p>In the above code, you give each instance a unique ID, and then everywhere you would have previously written <code>this._mileage</code> you now write <code>privateStore[this.id].mileage</code> which points to an object that is only accessible inside the module closure. This object holds all of the private data and it’s truly private. You can pass car instances around to external code, and their internal state can’t be modified.</p>
-<h3 id="the-problems">The Problems</h3>
-<p>As I said before, this method works, but it has a number of downsides:</p>
-<ul>
-<li>There’s too much extra code to type. If you have tens or hundreds of modules, it will quickly become a burden.</li>
-<li>You have to store an ID property on each instance, which is both annoying and potentially conflicting depending on the property name you choose.</li>
-<li>By using the object <code>privateStore[this.id]</code> instead of <code>this</code> you lose access to the instance’s prototype.</li>
-<li>Private members can’t be referenced in subclasses defined in different scopes, i.e. they can’t be protected members.</li>
-<li>It’s not memory efficient. Since the <code>privateStore</code> object holds a reference to each of the private instance objects, none of those objects can be garbage collected. If the public instance goes away it will be impossible to access those private properties, but they’ll still be taking up space in memory.</li>
-</ul>
-<p>Whether these downsides trump the downsides of not actually having privacy is debatable and depends on the situation. But based on the amount of code I’ve seen using this strategy (approximately zero code), I’d say developers prefer leaking private variables to all this boilerplate.</p>
-<p>Regardless, I know we can do better.</p>
-<h2 id="what-does-a-good-solution-look-like-">What Does a Good Solution Look Like?</h2>
-<p>Before looking at other solutions to this issue, I think it would be helpful to define what a good solution is. What are the goals we’re trying to achieve? If we can clearly define some goals then we can measure any solution against how close it gets to the ideal.</p>
-<p>This is my personal list of must-haves before I’d consider using a new privacy technique in a real project:</p>
-<ul>
-<li>The way to declare and access a private member should be simple, convenient, and intuitive.</li>
-<li>It should be clear from the code whether or not a member is private.</li>
-<li>Private members should only be accessible within the scope(s) you choose.</li>
-<li>Private members, if needed, should be able to access the public prototype.</li>
-<li>The solution should support subclasses, i.e. protected members should be possible.</li>
-<li>Dynamic changes to the instance or the instance’s prototype at runtime should never expose any private members.</li>
-<li>The solution should be memory efficient.</li>
-</ul>
-<h3 id="my-attempt">My Attempt</h3>
-<p>I wanted to solve this problem for myself and my own code, so I spent some time trying to improve upon the previous example. Like I said, that solution works (meaning it actually provides privacy), and if I could hide away some of the boilerplate, it would be much more approachable.</p>
-<p>An obvious optimization is that all the setup code should be abstracted away into its own module. Creating the private store and mapping each new instance to an object that holds those private members should all happen behind the scenes.</p>
-<p>A second optimization is that if the private object were created using <code>Object.create</code>, I could set its prototype to whatever I wanted. This would allow private instances to share the same prototype as their public counterparts. I could even add additional methods to the prototype chain.</p>
-<p>Finally, with ES6 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap">WeakMaps</a> (or using a WeakMap <a href="https://github.com/Benvie/WeakMap">shim</a>) we now have a data structure that can associate objects with other objects (traditional JavaScript objects can only have string keys). This means we can avoid having to put a unique ID on each instance. It also means we avoid the garbage collection issue since WeakMaps don’t create strong references to the objects they hold.</p>
-<p>I wanted to take these optimizations for a spin, so I started writing some code. I ended up making two new modules: <a href="https://github.com/philipwalton/private-parts">Private Parts</a>, a low level public-private store, and <a href="https://github.com/philipwalton/mozart">Mozart</a>, a full-featured classical inheritance solution.</p>
-<p>In the next few sections I’ll talk about how these modules can help you define classes with both private and protected properties and methods.</p>
-<h2 id="private-properties">Private Properties</h2>
-<p>In the original car class example, there was a private property called <code>_mileage</code> that we already discovered wasn’t actually private.</p>
-<p>The following example shows that same class rewritten using Private Parts. Notice that the code looks almost identical, yet the privacy is now real.</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> Car = (<span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+  <span class=keyword>return</span> Car;
+}());</code></pre><p>In the above code, you give each instance a unique ID, and then everywhere you would have previously written <code>this._mileage</code> you now write <code>privateStore[this.id].mileage</code> which points to an object that is only accessible inside the module closure. This object holds all of the private data and it’s truly private. You can pass car instances around to external code, and their internal state can’t be modified.</p><h3 id=the-problems>The Problems</h3><p>As I said before, this method works, but it has a number of downsides:</p><ul><li>There’s too much extra code to type. If you have tens or hundreds of modules, it will quickly become a burden.</li><li>You have to store an ID property on each instance, which is both annoying and potentially conflicting depending on the property name you choose.</li><li>By using the object <code>privateStore[this.id]</code> instead of <code>this</code> you lose access to the instance’s prototype.</li><li>Private members can’t be referenced in subclasses defined in different scopes, i.e. they can’t be protected members.</li><li>It’s not memory efficient. Since the <code>privateStore</code> object holds a reference to each of the private instance objects, none of those objects can be garbage collected. If the public instance goes away it will be impossible to access those private properties, but they’ll still be taking up space in memory.</li></ul><p>Whether these downsides trump the downsides of not actually having privacy is debatable and depends on the situation. But based on the amount of code I’ve seen using this strategy (approximately zero code), I’d say developers prefer leaking private variables to all this boilerplate.</p><p>Regardless, I know we can do better.</p><h2 id=what-does-a-good-solution-look-like->What Does a Good Solution Look Like?</h2><p>Before looking at other solutions to this issue, I think it would be helpful to define what a good solution is. What are the goals we’re trying to achieve? If we can clearly define some goals then we can measure any solution against how close it gets to the ideal.</p><p>This is my personal list of must-haves before I’d consider using a new privacy technique in a real project:</p><ul><li>The way to declare and access a private member should be simple, convenient, and intuitive.</li><li>It should be clear from the code whether or not a member is private.</li><li>Private members should only be accessible within the scope(s) you choose.</li><li>Private members, if needed, should be able to access the public prototype.</li><li>The solution should support subclasses, i.e. protected members should be possible.</li><li>Dynamic changes to the instance or the instance’s prototype at runtime should never expose any private members.</li><li>The solution should be memory efficient.</li></ul><h3 id=my-attempt>My Attempt</h3><p>I wanted to solve this problem for myself and my own code, so I spent some time trying to improve upon the previous example. Like I said, that solution works (meaning it actually provides privacy), and if I could hide away some of the boilerplate, it would be much more approachable.</p><p>An obvious optimization is that all the setup code should be abstracted away into its own module. Creating the private store and mapping each new instance to an object that holds those private members should all happen behind the scenes.</p><p>A second optimization is that if the private object were created using <code>Object.create</code>, I could set its prototype to whatever I wanted. This would allow private instances to share the same prototype as their public counterparts. I could even add additional methods to the prototype chain.</p><p>Finally, with ES6 <a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap>WeakMaps</a> (or using a WeakMap <a href=https://github.com/Benvie/WeakMap>shim</a>) we now have a data structure that can associate objects with other objects (traditional JavaScript objects can only have string keys). This means we can avoid having to put a unique ID on each instance. It also means we avoid the garbage collection issue since WeakMaps don’t create strong references to the objects they hold.</p><p>I wanted to take these optimizations for a spin, so I started writing some code. I ended up making two new modules: <a href=https://github.com/philipwalton/private-parts>Private Parts</a>, a low level public-private store, and <a href=https://github.com/philipwalton/mozart>Mozart</a>, a full-featured classical inheritance solution.</p><p>In the next few sections I’ll talk about how these modules can help you define classes with both private and protected properties and methods.</p><h2 id=private-properties>Private Properties</h2><p>In the original car class example, there was a private property called <code>_mileage</code> that we already discovered wasn’t actually private.</p><p>The following example shows that same class rewritten using Private Parts. Notice that the code looks almost identical, yet the privacy is now real.</p><pre class=highlight><code class=javascript><span class=keyword>var</span> Car = (<span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
 
-  <em><span class="keyword">var</span> _ = PrivateParts.createKey();</em>
+  <em><span class=keyword>var</span> _ = PrivateParts.createKey();</em>
 
-  <span class="function"><span class="keyword">function</span> <span class="title">Car</span><span class="params">(mileage)</span> {</span>
-    <span class="comment">// Store the mileage property privately.</span>
-    _(<span class="keyword">this</span>).mileage = mileage;
+  <span class=function><span class=keyword>function</span> <span class=title>Car</span><span class=params>(mileage)</span> {</span>
+    <span class=comment>// Store the mileage property privately.</span>
+    _(<span class=keyword>this</span>).mileage = mileage;
   }
 
-  Car.prototype.drive = <span class="function"><span class="keyword">function</span><span class="params">(miles)</span> {</span>
-    <span class="keyword">if</span> (<span class="keyword">typeof</span> miles == <span class="string">'number'</span> &amp;&amp; miles &gt; <span class="number">0</span>) {
-      _(<span class="keyword">this</span>).mileage += miles;
-    } <span class="keyword">else</span> {
-      <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'drive only accepts positive numbers'</span>);
+  Car.prototype.drive = <span class=function><span class=keyword>function</span><span class=params>(miles)</span> {</span>
+    <span class=keyword>if</span> (<span class=keyword>typeof</span> miles == <span class=string>'number'</span> &amp;&amp; miles &gt; <span class=number>0</span>) {
+      _(<span class=keyword>this</span>).mileage += miles;
+    } <span class=keyword>else</span> {
+      <span class=keyword>throw</span> <span class=keyword>new</span> Error(<span class=string>'drive only accepts positive numbers'</span>);
     }
   }
 
-  Car.prototype.readMileage = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-    <span class="keyword">return</span> _(<span class="keyword">this</span>).mileage;
+  Car.prototype.readMileage = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+    <span class=keyword>return</span> _(<span class=keyword>this</span>).mileage;
   }
 
-  <span class="keyword">return</span> Car;
-}());</code></pre><p>The main difference (highlighted in the above example) is one line of code that invokes a method called <code>createKey</code> and stores it on the underscore variable. The other difference is everywhere I previously wrote <code>this._mileage</code> I now write <code>_(this).mileage</code>.</p>
-<p>As you can probably guess, the underscore variable that stores the result of the <code>createKey</code> method is actually a function that takes the <code>this</code> object and returns its private instance. It’s the same idea as in the second example I showed, but without all the boilerplate.</p>
-<p>The underscore variable in the above example is what I call the “key function”. You can create new key functions by invoking the <code>createKey</code> method as shown in the example. A key function accepts an object (which I call the “public instance”) and returns a new object (the “private instance”). It’s uniquely linked to the public instance, so you can store private properties on it.</p>
-<p>I call it a key function because it provides secure, one-way access to the private instance. Without it, the private instance is completely inaccessible. I typically assign the key function to the underscore variable because it’s short and is often used to denote privacy. But you can choose whatever you like.</p>
-<p>The reason this works (and actually provides privacy) is because the only way to access the private instance is with the key function, and the only way to access the key function is to be in the scope where its declared. If you always define your classes/modules within a closure, and your key function is within that closure, you can have truly private members.</p>
-<h2 id="private-methods">Private Methods</h2>
-<p>Private methods have always been semi-possible in JavaScript thanks to dynamic <code>this</code> and the Function prototype methods <code>call</code> and <code>apply</code>.</p>
-<pre class="highlight"><code class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">privateMethod</span><span class="params">()</span> {</span>
-  <span class="keyword">this</span>.doSomething();
+  <span class=keyword>return</span> Car;
+}());</code></pre><p>The main difference (highlighted in the above example) is one line of code that invokes a method called <code>createKey</code> and stores it on the underscore variable. The other difference is everywhere I previously wrote <code>this._mileage</code> I now write <code>_(this).mileage</code>.</p><p>As you can probably guess, the underscore variable that stores the result of the <code>createKey</code> method is actually a function that takes the <code>this</code> object and returns its private instance. It’s the same idea as in the second example I showed, but without all the boilerplate.</p><p>The underscore variable in the above example is what I call the “key function”. You can create new key functions by invoking the <code>createKey</code> method as shown in the example. A key function accepts an object (which I call the “public instance”) and returns a new object (the “private instance”). It’s uniquely linked to the public instance, so you can store private properties on it.</p><p>I call it a key function because it provides secure, one-way access to the private instance. Without it, the private instance is completely inaccessible. I typically assign the key function to the underscore variable because it’s short and is often used to denote privacy. But you can choose whatever you like.</p><p>The reason this works (and actually provides privacy) is because the only way to access the private instance is with the key function, and the only way to access the key function is to be in the scope where its declared. If you always define your classes/modules within a closure, and your key function is within that closure, you can have truly private members.</p><h2 id=private-methods>Private Methods</h2><p>Private methods have always been semi-possible in JavaScript thanks to dynamic <code>this</code> and the Function prototype methods <code>call</code> and <code>apply</code>.</p><pre class=highlight><code class=javascript><span class=function><span class=keyword>function</span> <span class=title>privateMethod</span><span class=params>()</span> {</span>
+  <span class=keyword>this</span>.doSomething();
 }
 
-<span class="comment">// The public method can call the above function</span>
-<span class="comment">// and retain the `this` context.</span>
-SomeClass.prototype.publicMethod = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-  privateMethod.call(<span class="keyword">this</span>);
-}</code></pre><p>But using <code>call</code> or <code>apply</code> isn’t as convenient as invoking a private method directly on an object, nor does it allow for chaining multiple methods together.</p>
-<p>Private Parts has a solution to this problem.</p>
-<p>The <code>createKey</code> function accepts an optional argument that, when passed, is used to control how private instances are created. If <code>createKey</code> is passed an object, that object is used as the prototype for all newly created private instances.</p>
-<p>In essence, this object becomes a sort of “private prototype” because it’s in the prototype chain but only the private instances have access to it.</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> privateMethods = {
-  privateMethodOne: <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> ... },
-  privateMethodTwo: <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> ... }
+<span class=comment>// The public method can call the above function</span>
+<span class=comment>// and retain the `this` context.</span>
+SomeClass.prototype.publicMethod = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+  privateMethod.call(<span class=keyword>this</span>);
+}</code></pre><p>But using <code>call</code> or <code>apply</code> isn’t as convenient as invoking a private method directly on an object, nor does it allow for chaining multiple methods together.</p><p>Private Parts has a solution to this problem.</p><p>The <code>createKey</code> function accepts an optional argument that, when passed, is used to control how private instances are created. If <code>createKey</code> is passed an object, that object is used as the prototype for all newly created private instances.</p><p>In essence, this object becomes a sort of “private prototype” because it’s in the prototype chain but only the private instances have access to it.</p><pre class=highlight><code class=javascript><span class=keyword>var</span> privateMethods = {
+  privateMethodOne: <span class=function><span class=keyword>function</span><span class=params>()</span> {</span> ... },
+  privateMethodTwo: <span class=function><span class=keyword>function</span><span class=params>()</span> {</span> ... }
 }
 
-<span class="keyword">var</span> _ = PrivateParts.createKey(privateMethods);
+<span class=keyword>var</span> _ = PrivateParts.createKey(privateMethods);
 
-SomeClass.prototype.publicMethod = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-  <span class="comment">// Now the private methods can be invoked</span>
-  <span class="comment">// directly on the private instances.</span>
-  _(<span class="keyword">this</span>).privateMethodOne();
-  _(<span class="keyword">this</span>).privateMethodTwo();
-}</code></pre><p>In some cases, a private method might need to call a public method. In order for that to work, <code>privateMethods</code> will need to have the public prototype in its prototype chain. This can be easily achieved using <code>Object.create</code> to instantiate the <code>privateMethods</code> object.</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> privateMethods = Object.create(SomeClass.prototype);
-privateMethods.privateMethodOne = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> ... };
-privateMethods.privateMethodTwo = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> ... };
+SomeClass.prototype.publicMethod = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+  <span class=comment>// Now the private methods can be invoked</span>
+  <span class=comment>// directly on the private instances.</span>
+  _(<span class=keyword>this</span>).privateMethodOne();
+  _(<span class=keyword>this</span>).privateMethodTwo();
+}</code></pre><p>In some cases, a private method might need to call a public method. In order for that to work, <code>privateMethods</code> will need to have the public prototype in its prototype chain. This can be easily achieved using <code>Object.create</code> to instantiate the <code>privateMethods</code> object.</p><pre class=highlight><code class=javascript><span class=keyword>var</span> privateMethods = Object.create(SomeClass.prototype);
+privateMethods.privateMethodOne = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span> ... };
+privateMethods.privateMethodTwo = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span> ... };
 
-<span class="keyword">var</span> _ = PrivateParts.createKey(privateMethods);</code></pre><p>The sample below shows what the prototype chain will look like for private instances created this way. As you can see, both the private and public methods are accessible to private instances, but only the public methods are accessible to regular instances.</p>
-<pre class="highlight"><code class="javascript"><span class="comment">// The private instance prototype chain.</span>
-_(<span class="keyword">this</span>)  &gt;&gt;&gt;  privateMethods  &gt;&gt;&gt;  SomeClass.prototype
+<span class=keyword>var</span> _ = PrivateParts.createKey(privateMethods);</code></pre><p>The sample below shows what the prototype chain will look like for private instances created this way. As you can see, both the private and public methods are accessible to private instances, but only the public methods are accessible to regular instances.</p><pre class=highlight><code class=javascript><span class=comment>// The private instance prototype chain.</span>
+_(<span class=keyword>this</span>)  &gt;&gt;&gt;  privateMethods  &gt;&gt;&gt;  SomeClass.prototype
 
-<span class="comment">// The public instance prototype chain.</span>
-<span class="keyword">this</span>  &gt;&gt;&gt;  SomeClass.prototype</code></pre><p>Hopefully this isn’t too confusing, but in case it is, the <a href="https://github.com/philipwalton/private-parts#customizing-the-private-instance">customizing the private instance</a> section of the Private Parts README goes into more detail about how it all works.</p>
-<h2 id="protected-members-and-class-hierarchies">Protected Members and Class Hierarchies</h2>
-<p>The Private Parts key function limits the access of private members to just the scope where its defined. But what if your programs contain subclasses that are defined in separate scopes or separate files altogether? How can you safely share access?</p>
-<p>Private Parts is a fairly low level privacy solution and doesn’t attempt to solve all problems. It doesn’t have an out-of-the-box solution for subclasses; however, it provides you with all the tools you’d need to build your own.</p>
-<p>The <a href="https://github.com/philipwalton/mozart">Mozart</a> module I mentioned above is one such example. Mozart is a classical inheritance implementation based on <a href="http://bbenvie.com/articles/2012-07-25/JavaScript-Classes-with-private-protected-and-super">Brandon Benvie’s work</a> and built to show off the power of Private Parts. Some of the features of Mozart include:</p>
-<ul>
-<li>Simple subclassing.</li>
-<li>Private and protected methods and properties.</li>
-<li>Intuitive super method calling.</li>
-<li>Dynamic getter and setter generation.</li>
-</ul>
-<p>Mozart uses a function closure for its class definitions. These closures allow the key functions to be passed to the appropriate subclasses yet still remain inaccessible to the public.</p>
-<p>Here’s an example class built with Mozart:</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> ctor = require(<span class="string">'mozart'</span>);
+<span class=comment>// The public instance prototype chain.</span>
+<span class=keyword>this</span>  &gt;&gt;&gt;  SomeClass.prototype</code></pre><p>Hopefully this isn’t too confusing, but in case it is, the <a href=https://github.com/philipwalton/private-parts#customizing-the-private-instance>customizing the private instance</a> section of the Private Parts README goes into more detail about how it all works.</p><h2 id=protected-members-and-class-hierarchies>Protected Members and Class Hierarchies</h2><p>The Private Parts key function limits the access of private members to just the scope where its defined. But what if your programs contain subclasses that are defined in separate scopes or separate files altogether? How can you safely share access?</p><p>Private Parts is a fairly low level privacy solution and doesn’t attempt to solve all problems. It doesn’t have an out-of-the-box solution for subclasses; however, it provides you with all the tools you’d need to build your own.</p><p>The <a href=https://github.com/philipwalton/mozart>Mozart</a> module I mentioned above is one such example. Mozart is a classical inheritance implementation based on <a href=http://bbenvie.com/articles/2012-07-25/JavaScript-Classes-with-private-protected-and-super>Brandon Benvie’s work</a> and built to show off the power of Private Parts. Some of the features of Mozart include:</p><ul><li>Simple subclassing.</li><li>Private and protected methods and properties.</li><li>Intuitive super method calling.</li><li>Dynamic getter and setter generation.</li></ul><p>Mozart uses a function closure for its class definitions. These closures allow the key functions to be passed to the appropriate subclasses yet still remain inaccessible to the public.</p><p>Here’s an example class built with Mozart:</p><pre class=highlight><code class=javascript><span class=keyword>var</span> ctor = require(<span class=string>'mozart'</span>);
 
-<span class="keyword">var</span> Citizen = ctor(<span class="function"><span class="keyword">function</span><span class="params">(prototype, _, _protected)</span> {</span>
+<span class=keyword>var</span> Citizen = ctor(<span class=function><span class=keyword>function</span><span class=params>(prototype, _, _protected)</span> {</span>
 
-  <span class="comment">// == PUBLIC ==</span>
+  <span class=comment>// == PUBLIC ==</span>
 
-  prototype.init = <span class="function"><span class="keyword">function</span><span class="params">(name, age)</span> {</span>
-    _(<span class="keyword">this</span>).name = name;
-    _(<span class="keyword">this</span>).age = age;
+  prototype.init = <span class=function><span class=keyword>function</span><span class=params>(name, age)</span> {</span>
+    _(<span class=keyword>this</span>).name = name;
+    _(<span class=keyword>this</span>).age = age;
   };
-  prototype.vote = <span class="function"><span class="keyword">function</span><span class="params">(politician)</span> {</span>
-    <span class="keyword">if</span> (_(<span class="keyword">this</span>).allowedToVote()) {
-      console.log(_(<span class="keyword">this</span>).name + <span class="string">' voted for '</span> + politician);
-    } <span class="keyword">else</span> {
-      <span class="keyword">throw</span> <span class="keyword">new</span> Error(_(<span class="keyword">this</span>).name + <span class="string">' is not allowed to vote.'</span>);
+  prototype.vote = <span class=function><span class=keyword>function</span><span class=params>(politician)</span> {</span>
+    <span class=keyword>if</span> (_(<span class=keyword>this</span>).allowedToVote()) {
+      console.log(_(<span class=keyword>this</span>).name + <span class=string>' voted for '</span> + politician);
+    } <span class=keyword>else</span> {
+      <span class=keyword>throw</span> <span class=keyword>new</span> Error(_(<span class=keyword>this</span>).name + <span class=string>' is not allowed to vote.'</span>);
     }
   };
 
-  <span class="comment">// == PROTECTED ==</span>
+  <span class=comment>// == PROTECTED ==</span>
 
-  _protected.allowedToVote = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-    <span class="keyword">return</span> <span class="keyword">this</span>.age &gt; <span class="number">18</span>;
+  _protected.allowedToVote = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+    <span class=keyword>return</span> <span class=keyword>this</span>.age &gt; <span class=number>18</span>;
   };
-});</code></pre><p>The above citizen class defines both public and protected methods and uses the passed key function to store data on the instance.</p>
-<p>To subclass citizen, simply call its <code>subclass</code> method. As you’ll see, two of the methods in this subclass (<code>init</code> and <code>allowedToVote</code>) are overridden and call super, and the <code>vote</code> method is simply inherited as you’d expect from a subclass.</p>
-<pre class="highlight"><code class="javascript"><span class="keyword">var</span> Criminal = Citizen.subclass(<span class="function"><span class="keyword">function</span><span class="params">(prototype, _, _protected)</span> {</span>
+});</code></pre><p>The above citizen class defines both public and protected methods and uses the passed key function to store data on the instance.</p><p>To subclass citizen, simply call its <code>subclass</code> method. As you’ll see, two of the methods in this subclass (<code>init</code> and <code>allowedToVote</code>) are overridden and call super, and the <code>vote</code> method is simply inherited as you’d expect from a subclass.</p><pre class=highlight><code class=javascript><span class=keyword>var</span> Criminal = Citizen.subclass(<span class=function><span class=keyword>function</span><span class=params>(prototype, _, _protected)</span> {</span>
 
-  prototype.init = <span class="function"><span class="keyword">function</span><span class="params">(name, age, crime)</span> {</span>
-    _(<span class="keyword">this</span>).crime = crime;
-    prototype.super.init.call(<span class="keyword">this</span>, name, age);
+  prototype.init = <span class=function><span class=keyword>function</span><span class=params>(name, age, crime)</span> {</span>
+    _(<span class=keyword>this</span>).crime = crime;
+    prototype.super.init.call(<span class=keyword>this</span>, name, age);
   };
 
-  _protected.allowedToVote = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-    <span class="keyword">return</span> _(<span class="keyword">this</span>).crime != <span class="string">'felony'</span>
-      &amp;&amp; _protected.super.allowedToVote.call(<span class="keyword">this</span>);
+  _protected.allowedToVote = <span class=function><span class=keyword>function</span><span class=params>()</span> {</span>
+    <span class=keyword>return</span> _(<span class=keyword>this</span>).crime != <span class=string>'felony'</span>
+      &amp;&amp; _protected.super.allowedToVote.call(<span class=keyword>this</span>);
   };
 });
 
-<span class="keyword">var</span> joe = <span class="keyword">new</span> Criminal(<span class="string">'Joe'</span>, <span class="number">27</span>, <span class="string">'felony'</span>);
-joe.vote(<span class="string">'Obama'</span>) <span class="comment">// Throws: Joe is not allowed to vote.</span></code></pre><p>In case it’s not clear what’s going on here, the class definition is providing you with two prototypes to define methods on. The public (regular) prototype, and the protected prototype (the <code>_protected</code> variable). Protected methods and properties are accessed using the protected key (the <code>_</code> variable), and regular methods are accessed using <code>this</code> as usual.</p>
-<p>When calling <code>subclass</code> on a constructor, a new class is formed that extends both the public and protected prototypes and makes them available to the subclass definition. It also stores a property called <code>super</code> that points to the parent class’ respective prototypes for easy super method invocation. The protected key is also passed to the subclass allowing all instances of this class hierarchy to access it.</p>
-<p>This just skims the top of what you can do with Mozart. I didn’t even mention private methods or dynamic getters and setters. If you’d like to dig deeper, check out the <a href="https://github.com/philipwalton/mozart">documentation on Github</a> and play around with it. I’d love feedback or suggestions for how to make it simpler.</p>
-<h2 id="wrapping-up">Wrapping Up</h2>
-<p>I don’t want to present the techniques promoted in this article as <em>the</em> true way to do privacy in JavaScript, but I do think they’re cleaner and more powerful than anything I’ve tried before. I’m primarily interested in starting a conversation around how we can do this better, because I know we can.</p>
-<p>Fake privacy shouldn’t be an option. JavaScript as a language is incredibly flexible and provides many different ways to achieve true privacy. We should use them.</p>
-<p>The notions of privacy and encapsulation have existed for a long time and are staples of programming best practices. No one questions their usefulness. The mere fact that so much JavaScript code uses the underscore convention is proof that JavaScript developers get it.</p>
-<p>But we don’t need nominal privacy. We need real privacy.</p>
-<h2 id="further-reading">Further Reading</h2>
-<ul>
-<li><a href="https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Contributor_s_Guide/Private_Properties">Private Properties: Mozilla Developer Network</a></li>
-<li><a href="http://javascript.crockford.com/private.html">Private Members in JavaScript: Douglas Crockford</a></li>
-<li><a href="http://www.nczonline.net/blog/2014/01/21/private-instance-members-with-weakmaps-in-javascript/">Private instance members with weakmaps in JavaScript: Nicholas C. Zakas</a></li>
-<li><a href="http://bbenvie.com/articles/2012-07-25/JavaScript-Classes-with-private-protected-and-super">JavaScript Classes with private, protected, and super</a></li>
-</ul>
-
-  </div>
-
-  <footer class="entry-unrelated">
-
-    <div class="Share">
-      <span class="Share-figure">
-        <svg viewBox="0 0 39 32">
-          <use xlink:href="#icon-twitter-bird"></use>
-        </svg>
-      </span>
-      <p class="Share-pitch">
-        If you liked this article and think others should read it, please
-        <a data-social-network="Twitter"
-           data-social-action="tweet"
-           href="http://twitter.com/intent/tweet?text=Implementing%20Private%20and%20Protected%20Members%20in%20JavaScript&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fimplementing-private-and-protected-members-in-javascript%2F&amp;via=philwalton">share it on Twitter</a>.
-      </p>
-    </div>
-
-  </footer>
-
-</article>
-
-      </main>
-    </div>
-
-    <script>
-(function(window, document, location) {
-  (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = function(element, event, fn) {
-  if (element.addEventListener) {
-    element.addEventListener(event, fn, false);
-  }
-  else {
-    element.attachEvent('on' + event, fn);
-  }
-};
-
-},{}],2:[function(require,module,exports){
-/* global ga */
-
-var linkClicked = require('./link-clicked');
-var History2 = require('./history2');
-var parseUrl = require('./parse-url');
-
-// Cache the container element to avoid multiple lookups.
-var container;
-
-// Store the result of page content requests to avoid multiple
-// lookups when navigation to a previously seen page.
-var pageCache = {};
-
-
-function getTitle(a) {
-  var title = a.title || a.innerText;
-  return title ? title + ' \u2014 Philip Walton' : null;
-}
-
-
-function loadPageContent(done) {
-  var path = this.nextPage.path;
-
-  if (pageCache[path]) return done();
-
-  var basename = /(\w+)\.html$/;
-  var url = basename.test(path) ?
-      path.replace(basename, '_$1.html') : path + '_index.html';
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', url);
-  xhr.onload = function() {
-    if (xhr.status >= 200 && xhr.status < 400) {
-      pageCache[path] = xhr.responseText;
-      done();
-    }
-    else {
-      done(new Error('(' + xhr.status + ') ' + xhr.response));
-    }
-  };
-  xhr.onerror = function() {
-    done(new Error('Error making request to:' + url));
-  };
-  xhr.send();
-}
-
-
-function showPageContent() {
-  var content = pageCache[this.nextPage.path];
-  container.innerHTML = content;
-}
-
-
-function setScroll() {
-  var hash = this.nextPage.hash;
-  if (hash) {
-    var target = document.getElementById(hash.slice(1));
-  }
-  var scrollPos = target ? target.offsetTop : 0;
-
-  // TODO: There's a weird chrome bug were sometime this function
-  // doesn't do anything if Chrome has already visited this page and
-  // thinks it has a scroll position in mind. Just chrome, weird...
-  window.scrollTo(0, scrollPos);
-}
-
-
-function trackPage() {
-  ga('set', {
-    location: this.nextPage.href,
-    title: this.nextPage.title
-  });
-  ga('send', 'pageview');
-
-}
-
-
-function trackError(error) {
-  var url = this.nextPage.href;
-  ga('send', 'exception', {
-    exDescription: error.stack || error.message,
-    exFatal: false,
-    hitCallback: function() {
-      // If there's an error, attempt to manually navigation to the
-      // page. If that fails Github pages will show the actual 404 page.
-      location.href = url;
-    }
-  });
-}
-
-
-module.exports = {
-
-  init: function() {
-
-    // Only load external content via AJAX if the browser support pushState.
-    if (!(window.history && window.history.pushState)) return;
-
-    // Add the current page to the cache.
-    container = document.querySelector('main');
-    pageCache[location.pathname] = container.innerHTML;
-
-
-    var history2 = new History2()
-        .use(loadPageContent)
-        .use(showPageContent)
-        .use(setScroll)
-        .use(trackPage)
-        ['catch'](trackError);
-
-    linkClicked(function(event) {
-
-      // Don't attempt to AJAX in content if the link was click
-      // while the command (meta) or control key was pressed.
-      if (event.metaKey || event.ctrlKey) return;
-
-      var page = parseUrl(location.href);
-      var link = parseUrl(this.href);
-
-      // Don't do anything when clicking on links to the current URL.
-      if (link.href == page.href) event.preventDefault();
-
-      // If the clicked link is on the same site but has a different path,
-      // prevent the browser from navigating there and load the page via ajax.
-      if ((link.origin == page.origin) && (link.path != page.path)) {
-        event.preventDefault();
-        history2.add(link.href, getTitle(this));
-      }
-    });
-  }
-};
-
-},{"./history2":3,"./link-clicked":4,"./parse-url":7}],3:[function(require,module,exports){
-var parseUrl = require('./parse-url');
-
-function History2() {
-
-  // Store the current url information.
-  this.currentPage = parseUrl(window.location.href);
-  this.currentPage.title = document.title;
-
-  // Add history state initially so the first `popstate` event contains data.
-  history.replaceState(
-      this.currentPage,
-      this.currentPage.title,
-      this.currentPage.href);
-
-  this._queue = [];
-
-  // Listen for popstate changes and log them.
-  window.addEventListener('popstate', function(event) {
-    var state = event.state;
-    var title = state && state.title;
-    this.add(window.location.href, title, state, event);
-  }.bind(this));
-}
-
-
-History2.prototype.add = function(url, title, state, event) {
-
-  // Ignore urls pointing to the current address
-  if (url == this.currentPage.href) return;
-
-  this.nextPage = parseUrl(url);
-  this.nextPage.title = title;
-  this.nextPage.state = state;
-
-  this._processQueue(event);
-};
-
-
-/**
- * Register a plugin with the History2 instance.
- * @param {Function(History2, done)} - A plugin that runs some task and
- *     informs the next plugin in the queue when it's done.
- */
-History2.prototype.use = function(plugin) {
-  this._queue.push(plugin);
-
-  return this;
-};
-
-/**
- * Register a handler to catch any errors.
- * Note: In ES3 reserved words like "catch" couldn't be used as property names:
- * http://kangax.github.io/compat-table/es5/#Reserved_words_as_property_names
- * @param {Function(Error)} - The function to handle the error.
- */
-History2.prototype['catch'] = function(onError) {
-  this._onError = onError;
-
-  return this;
-};
-
-
-History2.prototype._onError = function(error) {
-  // Left blank so calling `_onError` never fails.
-  console.error(error.stack);
-};
-
-
-History2.prototype._onComplete = function(event) {
-
-  // Popstate triggered navigation is already handled by the browser,
-  // so we only add to the history in non-popstate cases.
-  if (!(event && event.type == 'popstate')) {
-    history.pushState(
-        this.nextPage,
-        this.nextPage.title,
-        this.nextPage.href);
-  }
-
-  if (this.nextPage.title) document.title = this.nextPage.title;
-
-  // Update the last url to the current url
-  this.currentPage = this.nextPage;
-  this.nextPage = null;
-};
-
-
-History2.prototype._processQueue = function(event) {
-  var self = this;
-  var i = 0;
-
-  (function next() {
-
-    var plugin = self._queue[i++];
-    var isSync = plugin && !plugin.length;
-
-    if (!plugin) return self._onComplete(event);
-
-    // The callback for async plugins.
-    function done(error) {
-      if (error) {
-        self._onError(error);
-      }
-      else {
-        next();
-      }
-    }
-
-    try {
-      plugin.apply(self, isSync ? [] : [done]);
-    }
-    catch(error) {
-      return self._onError(error);
-    }
-
-    // Sync plugins are done by now and can immediately process
-    // the next item in the queue.
-    if (isSync) next();
-
-  }());
-};
-
-
-module.exports = History2;
-
-},{"./parse-url":7}],4:[function(require,module,exports){
-var addListener = require('./add-listener');
-
-function isLink(el) {
-  return el.nodeName && el.nodeName.toLowerCase() == 'a' && el.href;
-}
-
-function getLinkAncestor(el) {
-  if (isLink(el)) return el;
-  while (el.parentNode && el.parentNode.nodeType == 1) {
-    if (isLink(el)) return el;
-    el = el.parentNode;
-  }
-}
-
-module.exports = function(fn) {
-  addListener(document, 'click', function(event) {
-    var e = event || window.event;
-    var target = e.target || e.srcElement;
-    var link = getLinkAncestor(target);
-    if (link) {
-      fn.call(link, e);
-    }
-  });
-};
-
-},{"./add-listener":1}],5:[function(require,module,exports){
-var supports = require('./supports');
-var outboundLinks = require('./outbound-links');
-var socialInteractions = require('./social-interactions');
-var contentLoader = require('./content-loader');
-
-
-// Add an `is-legacy` class on browsers that don't supports flexbox.
-if (!supports.flexbox()) {
-  document.documentElement.className += ' is-legacy';
-}
-
-
-// Track when the user clicks a link to an external site.
-outboundLinks.track();
-
-
-// Track when the user clicks a social link.
-socialInteractions.track();
-
-
-// Load links via AJAX instead of full page loads in browsers with pushState.
-contentLoader.init();
-
-},{"./content-loader":2,"./outbound-links":6,"./social-interactions":8,"./supports":9}],6:[function(require,module,exports){
-/* global ga */
-
-var parseUrl = require('./parse-url');
-var linkClicked = require('./link-clicked');
-
-function isExternalLink(link) {
-  var url = parseUrl(link.href);
-  var loc = parseUrl(location.href);
-  return url.origin != loc.origin;
-}
-
-module.exports = {
-  track: function() {
-    linkClicked(function() {
-      if (isExternalLink(this)) {
-
-        // Opening links in an external tabs allows the ga beacon to send.
-        // When following links directly, sometimes they don't make it.
-        this.target = '_blank';
-
-        ga('send', 'event', 'Outbound Link', 'click', this.href);
-      }
-    });
-
-  }
-};
-
-
-},{"./link-clicked":4,"./parse-url":7}],7:[function(require,module,exports){
-var a = document.createElement('a');
-var cache = {};
-
-/**
- * Parse the given url and return the properties returned
- * by the `Location` object.
- * @param {string} url - The url to parse.
- * @return {Object} An object with the same keys as `window.location`.
- */
-module.exports = function(url) {
-
-  if (cache[url]) return cache[url];
-
-  var httpPort = /:80$/;
-  var httpsPort = /:443/;
-
-  a.href = url;
-
-  // Sometimes IE will return no port or just a colon, especially for things
-  // like relative port URLs (e.g. "//google.com").
-  var protocol = !a.protocol || ':' == a.protocol ?
-      location.protocol : a.protocol;
-
-  // Don't include default ports.
-  var port = (a.port == '80' || a.port == '443') ? '' : a.port;
-
-  // Sometimes IE incorrectly includes a port (e.g. `:80` or `:443`)  even
-  // when no port is specified in the URL.
-  // http://bit.ly/1rQNoMg
-  var host = a.host.replace(protocol == 'http:' ? httpPort : httpsPort, '');
-
-  // Not all browser support `origin` so we have to build it.
-  var origin = a.origin ? a.origin : protocol + '//' + host;
-
-  // Sometimes IE doesn't include the leading slash for pathname.
-  // http://bit.ly/1rQNoMg
-  var pathname = a.pathname.charAt(0) == '/' ? a.pathname : '/' + a.pathname;
-
-  return cache[url] = {
-    hash: a.hash,
-    host: host,
-    hostname: a.hostname,
-    href: a.href,
-    origin: origin,
-    path: pathname + a.search,
-    pathname: pathname,
-    port: port,
-    protocol: protocol,
-    search: a.search
-  };
-};
-
-},{}],8:[function(require,module,exports){
-/* global ga */
-
-var linkClicked = require('./link-clicked');
-
-module.exports = {
-  track: function() {
-    linkClicked(function() {
-      var socialNetwork = this.getAttribute('data-social-network');
-      if (socialNetwork) {
-        var socialAction = this.getAttribute('data-social-action');
-        var socialTarget = location.href;
-
-        // Opening links in an external tabs allows the ga beacon to send.
-        // When following links directly, sometimes they don't make it.
-        this.target = '_blank';
-
-        ga('send', 'social', socialNetwork, socialAction, socialTarget);
-      }
-    });
-  }
-};
-
-},{"./link-clicked":4}],9:[function(require,module,exports){
-var supports = {};
-var style = document.body.style;
-
-module.exports = {
-  flexbox: function() {
-    return supports.flexbox || (supports.flexbox = ('flexBasis' in style ||
-        'msFlexAlign' in style || 'webkitBoxDirection' in style));
-  }
-};
-
-},{}]},{},[5]);
-
-}(window, document, location));
-</script>
-
-<!-- Load GA after the `window.ga` is initialized or you'll get errors. -->
-
-
-  <script async src="//www.google-analytics.com/analytics_debug.js"></script>
-
-
-
-  </body>
-</html>
+<span class=keyword>var</span> joe = <span class=keyword>new</span> Criminal(<span class=string>'Joe'</span>, <span class=number>27</span>, <span class=string>'felony'</span>);
+joe.vote(<span class=string>'Obama'</span>) <span class=comment>// Throws: Joe is not allowed to vote.</span></code></pre><p>In case it’s not clear what’s going on here, the class definition is providing you with two prototypes to define methods on. The public (regular) prototype, and the protected prototype (the <code>_protected</code> variable). Protected methods and properties are accessed using the protected key (the <code>_</code> variable), and regular methods are accessed using <code>this</code> as usual.</p><p>When calling <code>subclass</code> on a constructor, a new class is formed that extends both the public and protected prototypes and makes them available to the subclass definition. It also stores a property called <code>super</code> that points to the parent class’ respective prototypes for easy super method invocation. The protected key is also passed to the subclass allowing all instances of this class hierarchy to access it.</p><p>This just skims the top of what you can do with Mozart. I didn’t even mention private methods or dynamic getters and setters. If you’d like to dig deeper, check out the <a href=https://github.com/philipwalton/mozart>documentation on Github</a> and play around with it. I’d love feedback or suggestions for how to make it simpler.</p><h2 id=wrapping-up>Wrapping Up</h2><p>I don’t want to present the techniques promoted in this article as <em>the</em> true way to do privacy in JavaScript, but I do think they’re cleaner and more powerful than anything I’ve tried before. I’m primarily interested in starting a conversation around how we can do this better, because I know we can.</p><p>Fake privacy shouldn’t be an option. JavaScript as a language is incredibly flexible and provides many different ways to achieve true privacy. We should use them.</p><p>The notions of privacy and encapsulation have existed for a long time and are staples of programming best practices. No one questions their usefulness. The mere fact that so much JavaScript code uses the underscore convention is proof that JavaScript developers get it.</p><p>But we don’t need nominal privacy. We need real privacy.</p><h2 id=further-reading>Further Reading</h2><ul><li><a href=https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Contributor_s_Guide/Private_Properties>Private Properties: Mozilla Developer Network</a></li><li><a href=http://javascript.crockford.com/private.html>Private Members in JavaScript: Douglas Crockford</a></li><li><a href="http://www.nczonline.net/blog/2014/01/21/private-instance-members-with-weakmaps-in-javascript/">Private instance members with weakmaps in JavaScript: Nicholas C. Zakas</a></li><li><a href=http://bbenvie.com/articles/2012-07-25/JavaScript-Classes-with-private-protected-and-super>JavaScript Classes with private, protected, and super</a></li></ul></div><footer class=entry-unrelated><div class=Share><span class=Share-figure><svg viewbox="0 0 39 32"><use xlink:href=#icon-twitter-bird></use></svg></span><p class=Share-pitch>If you liked this article and think others should read it, please <a data-social-network=Twitter data-social-action=tweet href="http://twitter.com/intent/tweet?text=Implementing%20Private%20and%20Protected%20Members%20in%20JavaScript&amp;url=http%3A%2F%2Fphilipwalton.com%2Farticles%2Fimplementing-private-and-protected-members-in-javascript%2F&amp;via=philwalton">share it on Twitter</a>.</p></div></footer></article></main></div><script>!function(t,e,n){!function r(t,e,n){function i(a,s){if(!e[a]){if(!t[a]){var c="function"==typeof require&&require;if(!s&&c)return c(a,!0);if(o)return o(a,!0);var u=new Error("Cannot find module '"+a+"'");throw u.code="MODULE_NOT_FOUND",u}var h=e[a]={exports:{}};t[a][0].call(h.exports,function(e){var n=t[a][1][e];return i(n?n:e)},h,h.exports,r,t,e,n)}return e[a].exports}for(var o="function"==typeof require&&require,a=0;a<n.length;a++)i(n[a]);return i}({1:[function(t,e){e.exports=function(t,e,n){t.addEventListener?t.addEventListener(e,n,!1):t.attachEvent("on"+e,n)}},{}],2:[function(r,i){function o(t){var e=t.title||t.innerText;return e?e+" — Philip Walton":null}function a(t){var e=this.nextPage.path;if(g[e])return t();var n=/(\w+)\.html$/,r=n.test(e)?e.replace(n,"_$1.html"):e+"_index.html",i=new XMLHttpRequest;i.open("GET",r),i.onload=function(){i.status>=200&&i.status<400?(g[e]=i.responseText,t()):t(new Error("("+i.status+") "+i.response))},i.onerror=function(){t(new Error("Error making request to:"+r))},i.send()}function s(){var t=g[this.nextPage.path];l.innerHTML=t}function c(){var n=this.nextPage.hash;if(n)var r=e.getElementById(n.slice(1));var i=r?r.offsetTop:0;t.scrollTo(0,i)}function u(){ga("set",{location:this.nextPage.href,title:this.nextPage.title}),ga("send","pageview")}function h(t){var e=this.nextPage.href;ga("send","exception",{exDescription:t.stack||t.message,exFatal:!1,hitCallback:function(){n.href=e}})}var l,f=r("./link-clicked"),p=r("./history2"),d=r("./parse-url"),g={};i.exports={init:function(){if(t.history&&t.history.pushState){l=e.querySelector("main"),g[n.pathname]=l.innerHTML;var r=(new p).use(a).use(s).use(c).use(u)["catch"](h);f(function(t){if(!t.metaKey&&!t.ctrlKey){var e=d(n.href),i=d(this.href);i.href==e.href&&t.preventDefault(),i.origin==e.origin&&i.path!=e.path&&(t.preventDefault(),r.add(i.href,o(this)))}})}}}},{"./history2":3,"./link-clicked":4,"./parse-url":7}],3:[function(n,r){function i(){this.currentPage=o(t.location.href),this.currentPage.title=e.title,history.replaceState(this.currentPage,this.currentPage.title,this.currentPage.href),this._queue=[],t.addEventListener("popstate",function(e){var n=e.state,r=n&&n.title;this.add(t.location.href,r,n,e)}.bind(this))}var o=n("./parse-url");i.prototype.add=function(t,e,n,r){t!=this.currentPage.href&&(this.nextPage=o(t),this.nextPage.title=e,this.nextPage.state=n,this._processQueue(r))},i.prototype.use=function(t){return this._queue.push(t),this},i.prototype["catch"]=function(t){return this._onError=t,this},i.prototype._onError=function(t){console.error(t.stack)},i.prototype._onComplete=function(t){t&&"popstate"==t.type||history.pushState(this.nextPage,this.nextPage.title,this.nextPage.href),this.nextPage.title&&(e.title=this.nextPage.title),this.currentPage=this.nextPage,this.nextPage=null},i.prototype._processQueue=function(t){var e=this,n=0;!function r(){function i(t){t?e._onError(t):r()}var o=e._queue[n++],a=o&&!o.length;if(!o)return e._onComplete(t);try{o.apply(e,a?[]:[i])}catch(s){return e._onError(s)}a&&r()}()},r.exports=i},{"./parse-url":7}],4:[function(n,r){function i(t){return t.nodeName&&"a"==t.nodeName.toLowerCase()&&t.href}function o(t){if(i(t))return t;for(;t.parentNode&&1==t.parentNode.nodeType;){if(i(t))return t;t=t.parentNode}}var a=n("./add-listener");r.exports=function(n){a(e,"click",function(e){var r=e||t.event,i=r.target||r.srcElement,a=o(i);a&&n.call(a,r)})}},{"./add-listener":1}],5:[function(t){var n=t("./supports"),r=t("./outbound-links"),i=t("./social-interactions"),o=t("./content-loader");n.flexbox()||(e.documentElement.className+=" is-legacy"),r.track(),i.track(),o.init()},{"./content-loader":2,"./outbound-links":6,"./social-interactions":8,"./supports":9}],6:[function(t,e){function r(t){var e=i(t.href),r=i(n.href);return e.origin!=r.origin}var i=t("./parse-url"),o=t("./link-clicked");e.exports={track:function(){o(function(){r(this)&&(this.target="_blank",ga("send","event","Outbound Link","click",this.href))})}}},{"./link-clicked":4,"./parse-url":7}],7:[function(t,r){var i=e.createElement("a"),o={};r.exports=function(t){if(o[t])return o[t];var e=/:80$/,r=/:443/;i.href=t;var a=i.protocol&&":"!=i.protocol?i.protocol:n.protocol,s="80"==i.port||"443"==i.port?"":i.port,c=i.host.replace("http:"==a?e:r,""),u=i.origin?i.origin:a+"//"+c,h="/"==i.pathname.charAt(0)?i.pathname:"/"+i.pathname;return o[t]={hash:i.hash,host:c,hostname:i.hostname,href:i.href,origin:u,path:h+i.search,pathname:h,port:s,protocol:a,search:i.search}}},{}],8:[function(t,e){var r=t("./link-clicked");e.exports={track:function(){r(function(){var t=this.getAttribute("data-social-network");if(t){var e=this.getAttribute("data-social-action"),r=n.href;this.target="_blank",ga("send","social",t,e,r)}})}}},{"./link-clicked":4}],9:[function(t,n){var r={},i=e.body.style;n.exports={flexbox:function(){return r.flexbox||(r.flexbox="flexBasis"in i||"msFlexAlign"in i||"webkitBoxDirection"in i)}}},{}]},{},[5])}(window,document,location);</script><script async src=//www.google-analytics.com/analytics.js></script></body></html>
