@@ -4,7 +4,7 @@
   <title>Philip Walton</title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2014-12-22T22:39:09-08:00</updated>
+  <updated>2014-12-22T22:41:05-08:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
@@ -16,12 +16,6 @@
       <link href="http://philipwalton.com/articles/measuring-your-sites-responsive-breakpoint-usage/"/>
       <updated>2014-12-22T22:38:36-08:00</updated>
       <id>http://philipwalton.com/articles/measuring-your-sites-responsive-breakpoint-usage/</id>
-    </entry>
-    <entry>
-      <title>Normalizing Cross-browser Flexbox Issues</title>
-      <link href="http://philipwalton.com/articles/normalizing-cross-browser-flexbox-issues/"/>
-      <updated>2014-12-14T13:38:45-08:00</updated>
-      <id>http://philipwalton.com/articles/normalizing-cross-browser-flexbox-issues/</id>
     </entry>
     <entry>
       <title>The Dangers of Stopping Event Propagation</title>
