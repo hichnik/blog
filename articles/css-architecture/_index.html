@@ -57,24 +57,24 @@
 <span class=hljs-class>.button-icon</span> <span class=hljs-rules>{ <span class=hljs-rule>}</span></span>
 
 <span class=hljs-comment>/* Is this a component class or a layout class? */</span>
-<span class=hljs-class>.header</span> <span class=hljs-rules>{ <span class=hljs-rule>}</span></span></code></pre><p>From looking at the above classes, it’s impossible to tell what type of rule they apply to. This not only increases confusion during development, but it also makes it harder to test your CSS and HTML in an automated way. A structured naming convention allows you to look at a class name and know exactly what its relationship is to other classes and where it should appear in the HTML &mdash; making naming easier and testing possible where it previously was not.</p><pre class=hljs><code class=bash><span class=hljs-comment># Templates Rules (using Sass placeholders)</span>
-%template-name { }
-%template-name--modifier-name { }
-%template-name__sub-object { }
-%template-name__sub-object--modifier-name { }
+<span class=hljs-class>.header</span> <span class=hljs-rules>{ <span class=hljs-rule>}</span></span></code></pre><p>From looking at the above classes, it’s impossible to tell what type of rule they apply to. This not only increases confusion during development, but it also makes it harder to test your CSS and HTML in an automated way. A structured naming convention allows you to look at a class name and know exactly what its relationship is to other classes and where it should appear in the HTML &mdash; making naming easier and testing possible where it previously was not.</p><pre class=hljs><code><span class=hljs-comment># Templates Rules (using Sass placeholders)</span>
+%<span class=hljs-keyword>template</span>-name { }
+%<span class=hljs-keyword>template</span>-name--modifier-name { }
+%<span class=hljs-keyword>template</span>-name__sub-<span class=hljs-keyword>object</span> { }
+%<span class=hljs-keyword>template</span>-name__sub-<span class=hljs-keyword>object</span>--modifier-name { }
 
 <span class=hljs-comment># Component Rules</span>
 .component-name { }
 .component-name--modifier-name { }
-.component-name__sub-object { }
-.component-name__sub-object--modifier-name { }
+.component-name__sub-<span class=hljs-keyword>object</span> { }
+.component-name__sub-<span class=hljs-keyword>object</span>--modifier-name { }
 
 <span class=hljs-comment># Layout Rules</span>
-.l-layout-method { }
+.l-layout-<span class=hljs-keyword>method</span> { }
 .grid { }
 
 <span class=hljs-comment># State Rules</span>
-.is-state-type { }
+.<span class=hljs-keyword>is</span>-state-<span class=hljs-keyword>type</span> { }
 
 <span class=hljs-comment># Non-styled JavaScript Hooks</span>
 .js-action-name { }</code></pre><p>The first example redone:</p><pre class=hljs><code class=css><span class=hljs-comment>/* A component */</span>
