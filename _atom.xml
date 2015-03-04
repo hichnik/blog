@@ -4,13 +4,19 @@
   <title>Philip Walton</title>
   <link href="http://philipwalton.com/atom.xml" rel="self"/>
   <link href="http://philipwalton.com/"/>
-  <updated>2015-02-27T13:13:45-08:00</updated>
+  <updated>2015-03-03T22:26:24-08:00</updated>
   <id>http://philipwalton.com/</id>
   <author>
     <name>Philip Walton</name>
     <email>philip@philipwalton.com</email>
   </author>
 
+    <entry>
+      <title>Side Effects in CSS</title>
+      <link href="http://philipwalton.com/articles/side-effects-in-css/"/>
+      <updated>2015-03-03T21:25:06-08:00</updated>
+      <id>http://philipwalton.com/articles/side-effects-in-css/</id>
+    </entry>
     <entry>
       <title>Normalizing Cross-browser Flexbox Bugs</title>
       <link href="http://philipwalton.com/articles/normalizing-cross-browser-flexbox-bugs/"/>
