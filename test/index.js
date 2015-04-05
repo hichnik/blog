@@ -1,19 +1,21 @@
 import assert from 'assert';
+import test from 'selenium-webdriver/testing';
 import webdriver from 'selenium-webdriver';
 
 const BASE_URL = 'http://localhost:4000'
+
+const TITLE_SUFFIX = ' \u2014 Philip Walton';
+
+const WAIT_TIMEOUT = 200;
 
 const ARTICLES = [
   'Side Effects in CSS',
   'Normalizing Cross-browser Flexbox Bugs',
   'Measuring Your Site\'s Responsive Breakpoint Usage',
-  'Web Components and the Future of Modular CSS',
   'The Dangers of Stopping Event Propagation',
   'Stop Copying Social Code Snippets',
   'Implementing Private and Protected Members in JavaScript',
-  'Dependency Management in CSS',
   'How to Find Qualified Developers',
-  'Music, Web Browesrs, and the Well-Tempered Clavier',
   'Interviewing as a Front-End Engineer in San Francisco',
   'Solved by Flexbox',
   'Decoupling Your HTML, CSS, and JavaScript',
@@ -26,33 +28,47 @@ const ARTICLES = [
   'The Future of OOCSS: A Proposal',
   'What No One Told You About Z-Index',
   'CSS Architecture',
-]
+];
 
-describe('The home page', function() {
+
+test.describe('The home page', function() {
 
   let driver;
+  let until = webdriver.until;
 
-  before(function() {
+  test.before(function() {
     driver = new webdriver.Builder().forBrowser('chrome').build();
-    return driver.get(BASE_URL);
+    driver.get(BASE_URL);
   });
 
-  after(function() {
+  test.after(function() {
     driver.quit();
   })
 
-  it('lists all published articles.', function() {
+  test.it('contains a list of all published articles.', function() {
 
-    function assertArticleTitlesMatch(item, expectedTitle) {
-      item.findElement({css: '.ArticlePreview-title'})
-          .getText()
-          .then((text) => assert.equal(text, expectedTitle));
-    }
+    ARTICLES.forEach((title, i) => {
 
-    return driver
-        .findElements({css: '.ArticleList-item'})
-        .then((items) => items.forEach((item, i) =>
-            assertArticleTitlesMatch(item, ARTICLES[i])));
+      let selector = `.ArticleList-item:nth-child(${i+1})
+                      .ArticlePreview-title`;
+
+      driver.findElement({css: selector}).getText().then((text) =>
+          assert.equal(text, ARTICLES[i]));
+    });
+  });
+
+  test.it('has working links to all published articles.', function() {
+
+    ARTICLES.forEach((title, i) => {
+      let selector = `.ArticleList-item:nth-child(${i+1}) .ArticlePreview`;
+      let link = driver.findElement({css: selector});
+
+      link.click();
+      driver.wait(until.titleContains(ARTICLES[i]), WAIT_TIMEOUT);
+      driver.navigate().back();
+      driver.wait(until.titleContains('Home'), WAIT_TIMEOUT);
+    });
+
   });
 
 });

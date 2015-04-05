@@ -3,5 +3,5 @@ import mocha from 'gulp-mocha';
 
 gulp.task('test', function() {
   gulp.src('test/**/*.js', {read: false})
-      .pipe(mocha({timeout: 20000}));
+      .pipe(mocha({timeout: 60 * 1000}));
 });
