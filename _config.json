@@ -10,7 +10,8 @@
     "**/.DS_Store",
     "bower.json",
     "npm-debug.log",
-    "README.md"
+    "README.md",
+    "test"
   ],
   "postTypes": ["article"],
   "taxonomyTypes": ["tag"],
