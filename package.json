@@ -4,6 +4,9 @@
     "type": "git",
     "url": "git://github.com/philipwalton/blog.git"
   },
+  "scripts": {
+    "test": "gulp --require babel/register test"
+  },
   "author": {
     "name": "Philip Walton",
     "url": "http://philipwalton.com"
@@ -13,9 +16,13 @@
     "url": "https://github.com/philipwalton/blog/issues"
   },
   "devDependencies": {
+    "babel": "^5.0.8",
     "browserify": "^5.9.1",
+    "chromedriver": "^2.14.1",
     "cssnext": "^1.1.0",
     "fs-extra": "*",
+    "gulp": "^3.8.11",
+    "gulp-mocha": "^2.0.1",
     "he": "~0.3.6",
     "highlight.js": "^8.3.0",
     "html-minifier": "^0.6.6",
@@ -23,6 +30,7 @@
     "lodash-node": "*",
     "marked": "*",
     "normalize.css": "^3.0.2",
+    "selenium-webdriver": "^2.45.1",
     "shelljs": "^0.3.0"
   }
 }
